@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="fiscal4desktop-starter" />
+        <module name="fiscal4desktop-domain" />
+        <module name="fiscal4desktop-infra" />
+        <module name="fiscal4desktop-service" />
+        <module name="fiscal4desktop-api" />
+        <module name="fiscal4desktop-ui" />
+        <module name="fiscal4desktop-common" />
+        <module name="fiscal4desktop-controller" />
+      </profile>
+    </annotationProcessing>
+  </component>
+</project>
