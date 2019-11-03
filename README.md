@@ -15,6 +15,6 @@ JDK: 1.8
 <br>
 Maven: 3.x
 
-## Requisitos
+## Uso
 API para responder as chamadas da 'integration.dll' escrita em C
 
