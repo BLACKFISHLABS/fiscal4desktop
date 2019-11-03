@@ -11,5 +11,12 @@
 
     <artifactId>fiscal4desktop-api</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.github.blackfishlabs</groupId>
+            <artifactId>fiscal4desktop-controller</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

@@ -11,8 +11,9 @@ Módulo Desktop para emissão de Documentos Eletrônicos
 | CC-e                | OK             |
 
 ## Requisitos
-JDK >= 1.8<br>
-Maven >= 3.x
+JDK: 1.8
+<br>
+Maven: 3.x
 
 ## Requisitos
 API para responder as chamadas da 'integration.dll' escrita em C

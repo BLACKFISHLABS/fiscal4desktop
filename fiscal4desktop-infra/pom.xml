@@ -11,5 +11,13 @@
 
     <artifactId>fiscal4desktop-infra</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>io.github.blackfishlabs</groupId>
+            <artifactId>fiscal4desktop-common</artifactId>
+            <version>4.1.0-RELEASE</version>
+        </dependency>
+    </dependencies>
+
 
 </project>
