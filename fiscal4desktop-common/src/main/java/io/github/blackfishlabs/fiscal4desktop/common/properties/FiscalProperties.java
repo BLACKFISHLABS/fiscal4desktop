@@ -81,5 +81,15 @@ public final class FiscalProperties implements IPath, IParam {
         return prop.getProperty(KEY_PARAM_EMAIL_ACCOUNTANT);
     }
 
+    @Override
+    public String getEmailCompany() {
+        return prop.getProperty(KEY_PARAM_EMAIL_COMPANY);
+    }
+
+    @Override
+    public String getEmailKey() {
+        return prop.getProperty(KEY_PARAM_EMAIL_KEY);
+    }
+
 }
 

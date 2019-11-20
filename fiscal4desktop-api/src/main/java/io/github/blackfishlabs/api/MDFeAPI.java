@@ -5,16 +5,14 @@ import io.github.blackfishlabs.controller.MDFeController;
 import io.github.blackfishlabs.controller.dto.*;
 import io.github.blackfishlabs.fiscal4desktop.common.helper.FiscalHelper;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+@Slf4j
 @Path("/mdfe")
 public class MDFeAPI {
-
-    private static final Logger logger = LogManager.getLogger(MDFeAPI.class);
 
     @POST
     @Path("/emitir")
@@ -24,7 +22,7 @@ public class MDFeAPI {
                              @FormParam("emitente") String emitter,
                              @FormParam("senha") String password) {
         try {
-            logger.info("Call sendMDFe() method");
+            log.info("Call sendMDFe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -35,7 +33,7 @@ public class MDFeAPI {
             dto.setPassword(password);
 
             String json = FiscalHelper.validation(mdfe);
-            logger.info("JSON para envio: " + json);
+            log.info("JSON para envio: " + json);
 
             ObjectMapper mapper = new ObjectMapper();
             FiscalMDFeDocumentDTO fiscalDocumentDTO = mapper.readValue(json, FiscalMDFeDocumentDTO.class);
@@ -43,7 +41,7 @@ public class MDFeAPI {
 
             return Response.status(200).entity(controller.send(dto)).build();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return Response.status(500).entity("Exception: ".concat(ex.getMessage())).build();
         }
     }
@@ -57,7 +55,7 @@ public class MDFeAPI {
                                @FormParam("chave") String key,
                                @FormParam("justificativa") String justification) {
         try {
-            logger.info("Call cancelMDFe() method");
+            log.info("Call cancelMDFe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -71,7 +69,7 @@ public class MDFeAPI {
 
             return Response.status(200).entity(controller.cancel(dto)).build();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return Response.status(500).entity("Exception: ".concat(ex.getMessage())).build();
         }
     }
@@ -83,7 +81,7 @@ public class MDFeAPI {
     public Response statusNotClosing(@FormParam("emitente") String emitter,
                                      @FormParam("senha") String password) {
         try {
-            logger.info("Call statusNotClosing() method");
+            log.info("Call statusNotClosing() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -96,7 +94,7 @@ public class MDFeAPI {
 
             return Response.status(200).entity(controller.statusNotClosing(dto)).build();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return Response.status(500).entity("Exception: ".concat(ex.getMessage())).build();
         }
     }
@@ -113,7 +111,7 @@ public class MDFeAPI {
                             @FormParam("dataEncerramento") String closing,
                             @FormParam("UF") String uf) {
         try {
-            logger.info("Call closing() method");
+            log.info("Call closing() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -130,7 +128,7 @@ public class MDFeAPI {
 
             return Response.status(200).entity(controller.closing(dto)).build();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return Response.status(500).entity("Exception: ".concat(ex.getMessage())).build();
         }
     }

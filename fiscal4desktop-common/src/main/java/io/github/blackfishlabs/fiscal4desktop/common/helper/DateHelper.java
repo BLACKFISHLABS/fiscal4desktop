@@ -18,9 +18,6 @@ public class DateHelper {
         return date == null ? "" : sdf.format(date);
     }
 
-    /**
-     * Convert {@link java.time.LocalDate} to {@link org.joda.time.DateTime}
-     */
     public static DateTime toDateTime(LocalDate localDate) {
         return new DateTime(DateTimeZone.UTC).withDate(
                 localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth()

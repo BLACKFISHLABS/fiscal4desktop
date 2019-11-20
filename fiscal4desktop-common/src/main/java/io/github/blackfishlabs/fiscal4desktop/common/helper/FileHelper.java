@@ -15,9 +15,8 @@ import br.indie.fiscal4j.nfe400.classes.nota.NFNotaProcessada;
 import br.indie.fiscal4j.nfe400.classes.nota.consulta.NFProtocoloEvento;
 import com.google.common.collect.Lists;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,9 +30,9 @@ import java.util.Optional;
 
 import static java.util.Objects.nonNull;
 
+@Slf4j
 public class FileHelper {
 
-    private static final Logger logger = LogManager.getLogger(FileHelper.class);
     private static String pdfPath = "";
     private static String xmlPath = "";
 
@@ -47,29 +46,29 @@ public class FileHelper {
 
     public static void saveFilesAndSendToEmailAttach(NFLoteEnvioRetornoDados send) {
         try {
-            logger.info("Salvando arquivos na pasta de XML e PDF");
+            log.info("Salvando arquivos na pasta de XML e PDF");
 
             List<String> files;
             files = saveFiles(send);
-            files.forEach(f -> logger.info("Arquivo salvo: ".concat(f)));
+            files.forEach(f -> log.info("Arquivo salvo: ".concat(f)));
 
             Optional<NFNota> doc = send.getLoteAssinado().getNotas().stream().findFirst();
 
             doc.ifPresent(n -> new Thread(() -> {
                 if (nonNull(n.getInfo().getDestinatario())) {
-                    logger.info(EmailHelper.sendDocumentByEmail(files, "Autorização de NFe",
+                    log.info(EmailHelper.sendDocumentByEmail(files, "Autorização de NFe",
                             n.getInfo().getEmitente().getRazaoSocial(),
                             n.getInfo().getIdentificacao().getNumeroNota(),
                             n.getInfo().getEmitente().getCnpj(),
                             n.getInfo().getChaveAcesso(),
                             n.getInfo().getDestinatario().getEmail()));
                 } else {
-                    logger.info("Nota de consumidor. Sem Destinatário.");
+                    log.info("Nota de consumidor. Sem Destinatário.");
                 }
             }).start());
 
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 
@@ -78,27 +77,27 @@ public class FileHelper {
         NFNota nota = loteEnvio.getNotas().get(0);
 
         try {
-            logger.info("Salvando arquivos na pasta de XML e PDF");
+            log.info("Salvando arquivos na pasta de XML e PDF");
             List<String> files;
             files = saveFiles(send, xml);
-            files.forEach(f -> logger.info("Arquivo salvo: ".concat(f)));
+            files.forEach(f -> log.info("Arquivo salvo: ".concat(f)));
 
             new Thread(() -> {
                 if (nonNull(nota.getInfo().getDestinatario())) {
-                    logger.info(EmailHelper.sendDocumentByEmail(files, "Autorização de NFe emitida em Contingência",
+                    log.info(EmailHelper.sendDocumentByEmail(files, "Autorização de NFe emitida em Contingência",
                             nota.getInfo().getEmitente().getRazaoSocial(),
                             nota.getInfo().getIdentificacao().getNumeroNota(),
                             nota.getInfo().getEmitente().getCnpj(),
                             nota.getInfo().getChaveAcesso(),
                             nota.getInfo().getDestinatario().getEmail()));
                 } else {
-                    logger.info("Nota de consumidor. Sem Destinatário.");
+                    log.info("Nota de consumidor. Sem Destinatário.");
                 }
             }).start();
 
 
         } catch (Exception e) {
-            logger.error(e.getMessage());
+            log.error(e.getMessage());
         }
     }
 

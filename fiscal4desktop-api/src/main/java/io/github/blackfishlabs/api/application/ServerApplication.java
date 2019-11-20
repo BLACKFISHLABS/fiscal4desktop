@@ -1,15 +1,14 @@
 package io.github.blackfishlabs.api.application;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 import org.restlet.Component;
 import org.restlet.Server;
 import org.restlet.data.Protocol;
 import org.restlet.ext.jaxrs.JaxRsApplication;
 
+@Slf4j
 public class ServerApplication {
 
-    private static final Logger logger = LogManager.getLogger(ServerApplication.class);
     private static Component restServer;
 
     public static void main(String[] args) {
@@ -45,7 +44,7 @@ public class ServerApplication {
     }
 
     private static void restart() {
-        logger.info(stop());
-        logger.info(start(8182));
+        log.info(stop());
+        log.info(start(8182));
     }
 }

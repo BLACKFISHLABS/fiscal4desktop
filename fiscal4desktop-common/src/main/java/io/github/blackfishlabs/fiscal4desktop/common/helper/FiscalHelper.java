@@ -25,7 +25,7 @@ import java.util.regex.Pattern;
 
 public class FiscalHelper {
 
-    public static final String VERSION_NFE = "4.00";
+    private static final String VERSION_NFE = "4.00";
 
     public static String validation(String nfe) {
         String json = nfe.replaceAll("#", "\"");
@@ -109,7 +109,7 @@ public class FiscalHelper {
     }
 
     // For NFe/NFCe Normal
-    public static NFNotaProcessada getNFProcessed(NFLoteEnvioRetorno result, NFNota document) {
+    static NFNotaProcessada getNFProcessed(NFLoteEnvioRetorno result, NFNota document) {
         final NFNotaProcessada processed = new NFNotaProcessada();
         processed.setVersao(new BigDecimal(VERSION_NFE));
 
@@ -177,7 +177,7 @@ public class FiscalHelper {
         }
     }
 
-    public static String CNPJMask(String cnpj) {
+    static String CNPJMask(String cnpj) {
         Pattern pattern = Pattern.compile("(\\d{2})(\\d{3})(\\d{3})(\\d{4})(\\d{2})");
         Matcher matcher = pattern.matcher(cnpj);
         if (matcher.find()) {

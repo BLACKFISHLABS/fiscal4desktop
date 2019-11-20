@@ -3,7 +3,7 @@
   <parent>
     <artifactId>fiscal4desktop</artifactId>
     <groupId>io.github.blackfishlabs</groupId>
-    <version>4.1.0-RELEASE</version>
+    <version>4.1.1-RELEASE</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>fiscal4desktop-starter</artifactId>
@@ -74,9 +74,15 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-validator</artifactId>
+      <version>6.1.0.Final</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
-      <version>1.18.0</version>
+      <version>1.18.10</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

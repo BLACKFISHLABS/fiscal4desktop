@@ -15,17 +15,15 @@ import io.github.blackfishlabs.fiscal4desktop.common.helper.FiscalConstantHelper
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
 import io.github.blackfishlabs.service.CCeService;
 import io.github.blackfishlabs.service.NFeService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+@Slf4j
 public class CCeController {
-
-    private static final Logger logger = LogManager.getLogger(CCeController.class);
 
     public String sendCCe(FiscalEventCCeDTO dto) throws Exception {
         CCeService service = new CCeService();
@@ -43,7 +41,7 @@ public class CCeController {
             checkArgument(info.getCodigoStatus().equals(135),
                     info.getCodigoStatus().toString().concat(" - ").
                             concat(info.getMotivo()));
-            logger.info("Carta de Correção emitida pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
+            log.info("Carta de Correção emitida pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
 
             FiscalStatusDocumentTranslator fiscalStatusDocumentTranslator = new FiscalStatusDocumentTranslator();
 
@@ -70,7 +68,7 @@ public class CCeController {
                     FileHelper.exportXml(procEventNFe, xmlPath);
                     FileHelper.exportFilesPDFOnly(proc.get());
                 } catch (Exception e) {
-                    logger.error(e.getMessage());
+                    log.error(e.getMessage());
                 }
             }
 

@@ -1,97 +1,91 @@
 package io.github.blackfishlabs.fiscal4desktop.common.helper;
 
-import com.google.common.collect.Lists;
+import com.sendgrid.Method;
+import com.sendgrid.Request;
+import com.sendgrid.Response;
+import com.sendgrid.SendGrid;
+import com.sendgrid.helpers.mail.Mail;
+import com.sendgrid.helpers.mail.objects.Attachments;
+import com.sendgrid.helpers.mail.objects.Content;
+import com.sendgrid.helpers.mail.objects.Email;
+import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.io.IOUtils;
 
-import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
-import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
+@Slf4j
 public class EmailHelper {
 
-    private static final String EMAIL = "postmaster@blackfishlabs.com.br";
-    private static final String PASSWORD = "ef12a50651131755f32651610c1b95c4";
-
-    private static boolean validate(String email) {
-        if (email.equals("no@mail.com")) {
-            return false;
+    private static void sendEmailSendGrid(String emailFrom,
+                                          String emailTo,
+                                          String subject,
+                                          String messageText,
+                                          List<String> attachments) {
+        if (isNullOrEmpty(FiscalProperties.getInstance().getEmailCompany())) {
+            log.warn("Arquivo de Propriedade: Preencher parametro de email da empresa!");
+            return;
         }
 
-        if (email.trim().length() < 6) {
-            return false;
-        } else {
-            Pattern pattern;
-            Matcher matcher;
-            final String EMAIL_PATTERN
-                    = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-            pattern = Pattern.compile(EMAIL_PATTERN);
-            matcher = pattern.matcher(email);
-
-            return matcher.matches();
+        if (isNullOrEmpty(FiscalProperties.getInstance().getEmailKey())) {
+            log.warn("Arquivo de Propriedade: Preencher parametro de chave do email!");
+            return;
         }
-    }
 
-    private static void send(final String sender, final String password, String recipient, String subject, String messageText, List<String> attachments) throws MessagingException {
-        Properties props = new Properties();
-        props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.starttls.enable", "true");
-        props.put("mail.smtp.host", "smtp.mailgun.org");
-        props.put("mail.smtp.port", "587");
 
-        Session session = Session.getInstance(props,
-                new Authenticator() {
-                    @Override
-                    protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(sender, password);
+        Email from = new Email(emailFrom);
+        Email to = new Email(emailTo);
+
+        Content content = new Content("text/html", messageText);
+        Mail mail = new Mail(from, subject, to, content);
+
+        if (!attachments.isEmpty()) {
+            for (String attachment : attachments) {
+                File file = new File(attachment);
+                if (file.exists()) {
+                    try {
+                        DataSource source = new FileDataSource(attachment);
+
+                        Attachments myAttach = new Attachments();
+                        myAttach.setContent(Base64.encodeBase64String(IOUtils.toByteArray(source.getInputStream())));
+                        myAttach.setType(source.getContentType());
+                        myAttach.setFilename(source.getName());
+                        mail.addAttachments(myAttach);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        log.error(e.getMessage());
                     }
-                });
-
-        Message message = new MimeMessage(session);
-        message.setFrom(new InternetAddress(sender));
-        message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipient));
-        message.setRecipients(Message.RecipientType.BCC, InternetAddress.parse("dev.blackfishlabs@gmail.com"));
-        message.setSubject(subject);
-
-        BodyPart textPart = new MimeBodyPart();
-        textPart.setContent(messageText, "text/html; charset=utf-8");
-
-        Multipart multipart = new MimeMultipart();
-        multipart.addBodyPart(textPart);
-
-        List<String> filesToSend = Lists.newArrayList();
-        attachments.forEach(a -> {
-            File f = new File(a);
-            if (f.exists()) {
-                filesToSend.add(a);
-            }
-        });
-
-        if (!filesToSend.isEmpty()) {
-            for (String attachment : filesToSend) {
-                BodyPart attachmentPart = new MimeBodyPart();
-                DataSource source = new FileDataSource(attachment);
-                attachmentPart.setDataHandler(new DataHandler(source));
-                attachmentPart.setFileName(source.getName());
-                multipart.addBodyPart(attachmentPart);
+                }
             }
         }
-        message.setContent(multipart);
-        Transport.send(message);
+
+        SendGrid sg = new SendGrid(FiscalProperties.getInstance().getEmailKey());
+        Request request = new Request();
+        try {
+            request.setMethod(Method.POST);
+            request.setEndpoint("mail/send");
+            request.setBody(mail.build());
+
+            Response response = sg.api(request);
+            System.out.println(response.getStatusCode());
+            System.out.println(response.getBody());
+            System.out.println(response.getHeaders());
+        } catch (IOException ex) {
+            ex.printStackTrace();
+            log.error(ex.getMessage());
+        }
     }
 
-    public static String sendDocumentByEmail(final List<String> attachments,
+    public static String sendDocumentByEmailXML(final List<String> attachments,
                                              final String event,
                                              final String enterprise,
                                              final String cnpj,
@@ -122,16 +116,9 @@ public class EmailHelper {
         if (isNullOrEmpty(email)) {
             return "Email não cadastrado.";
         } else {
-            if (validate(EMAIL) && validate(email)) {
-                try {
-                    EmailHelper.send(EMAIL, PASSWORD, email, subject, message.toString(), attachments);
-                    return "Email enviado para ".concat(email);
-                } catch (MessagingException e) {
-                    return "Não foi possível enviar o e-mail!"
-                            .concat("\n")
-                            .concat("Causa: ")
-                            .concat(e.getMessage());
-                }
+            if (validate(FiscalProperties.getInstance().getEmailCompany()) && validate(email)) {
+                EmailHelper.sendEmailSendGrid(FiscalProperties.getInstance().getEmailCompany(), email, subject, message.toString(), attachments);
+                return "Email enviado para ".concat(email);
             } else {
                 return "Email inválido: " + email;
             }
@@ -179,19 +166,29 @@ public class EmailHelper {
         if (isNullOrEmpty(email)) {
             return "Email não cadastrado.";
         } else {
-            if (validate(EMAIL) && validate(email)) {
-                try {
-                    EmailHelper.send(EMAIL, PASSWORD, email, subject, message.toString(), attachments);
-                    return "Email enviado para ".concat(email);
-                } catch (MessagingException e) {
-                    return "Não foi possível enviar o e-mail!"
-                            .concat("\n")
-                            .concat("Causa: ")
-                            .concat(e.getMessage());
-                }
+            if (validate(FiscalProperties.getInstance().getEmailCompany()) && validate(email)) {
+                EmailHelper.sendEmailSendGrid(FiscalProperties.getInstance().getEmailCompany(), email, subject, message.toString(), attachments);
+                return "Email enviado para ".concat(email);
             } else {
                 return "Email inválido: " + email;
             }
+        }
+    }
+
+    private static boolean validate(String email) {
+        if (email.equals("no@mail.com")) return false;
+        if (email.trim().length() < 6) {
+            return false;
+        } else {
+            Pattern pattern;
+            Matcher matcher;
+            final String EMAIL_PATTERN
+                    = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
+                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
+            pattern = Pattern.compile(EMAIL_PATTERN);
+            matcher = pattern.matcher(email);
+
+            return matcher.matches();
         }
     }
 

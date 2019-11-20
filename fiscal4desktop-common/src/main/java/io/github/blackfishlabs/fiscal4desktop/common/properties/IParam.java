@@ -10,4 +10,8 @@ public interface IParam {
     String getPassword();
 
     String getEmailAccountant();
+
+    String getEmailCompany();
+
+    String getEmailKey();
 }

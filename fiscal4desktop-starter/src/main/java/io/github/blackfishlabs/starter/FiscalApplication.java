@@ -4,8 +4,7 @@ import io.github.blackfishlabs.api.application.ServerApplication;
 import io.github.blackfishlabs.fiscal4desktop.common.helper.FiscalHelper;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
 import io.github.blackfishlabs.ui.TrayIconUI;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.swing.*;
 import java.io.FileInputStream;
@@ -22,8 +21,8 @@ import java.util.concurrent.TimeUnit;
  * @author Jeferson Cruz
  * BLACKFISH LABS
  */
+@Slf4j
 public class FiscalApplication {
-    private static final Logger logger = LogManager.getLogger(FiscalApplication.class);
     private static final ScheduledExecutorService scheduler_contingency = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) {
@@ -34,9 +33,9 @@ public class FiscalApplication {
         lookAndFeel();
         SwingUtilities.invokeLater(TrayIconUI::createAndShowGUI);
 
-        logger.info(ServerApplication.start(8182));
+        log.info(ServerApplication.start(8182));
         verifyCertificate();
-        logger.info(">> Workspace: " + FiscalProperties.getInstance().getDirApplication());
+        log.info(">> Workspace: " + FiscalProperties.getInstance().getDirApplication());
 
         scheduler_contingency.scheduleAtFixedRate(ContingencyScheduler::execute, 1, 1, TimeUnit.HOURS);
     }
@@ -63,16 +62,16 @@ public class FiscalApplication {
                 String alias = eAliases.nextElement();
                 Certificate certificado = keystore.getCertificate(alias);
 
-                logger.info(">> Certificado Digital");
-                logger.info("Alias: " + alias);
+                log.info(">> Certificado Digital");
+                log.info("Alias: " + alias);
                 X509Certificate cert = (X509Certificate) certificado;
 
-                logger.info(cert.getSubjectDN().getName());
-                logger.info("Válido a partir de..: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotBefore()));
-                logger.info("Válido até..........: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotAfter()));
+                log.info(cert.getSubjectDN().getName());
+                log.info("Válido a partir de..: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotBefore()));
+                log.info("Válido até..........: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotAfter()));
             }
         } catch (Exception e) {
-            logger.error(e.toString());
+            log.error(e.toString());
         }
     }
 }

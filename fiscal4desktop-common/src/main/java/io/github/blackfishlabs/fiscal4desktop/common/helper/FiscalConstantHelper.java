@@ -2,25 +2,18 @@ package io.github.blackfishlabs.fiscal4desktop.common.helper;
 
 public final class FiscalConstantHelper {
 
-    /**
-     * PATH
-     */
+    // PATH
     public static final String NFE_PATH = "nfe/";
     public static final String NFCE_PATH = "nfce/";
     public static final String CCE_PATH = "cce/";
     public static final String MDFE_PATH = "mdfe/";
-    public static final String NFCE_PATH_CONTINGENCY = NFCE_PATH + "contigencia/";
+    static final String NFCE_PATH_CONTINGENCY = NFCE_PATH + "contigencia/";
     public static final String CANCEL_PATH = "cancelamentos/";
 
-    /**
-     * IMAGES
-     */
-    public static final String LOGO_NFE = "logo_nfe.png";
+    // IMAGES
+    static final String LOGO_NFE = "logo_nfe.png";
 
-
-    /**
-     * ZIPED FILES
-     */
+    // ZIPPED FILES
     public static final String NFE_ZIP = "-NFe.zip";
     public static final String NFE_CANCEL_ZIP = "-NFe-Cancel.zip";
 

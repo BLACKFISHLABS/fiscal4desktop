@@ -7,16 +7,14 @@ import io.github.blackfishlabs.controller.StatusWebServiceController;
 import io.github.blackfishlabs.controller.dto.*;
 import io.github.blackfishlabs.fiscal4desktop.common.helper.FiscalHelper;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+@Slf4j
 @Path("/nfe")
 public class NFeAPI {
-
-    private static final Logger logger = LogManager.getLogger(NFeAPI.class);
 
     @POST
     @Path("/emitir")
@@ -26,7 +24,7 @@ public class NFeAPI {
                             @FormParam("emitente") String emitter,
                             @FormParam("senha") String password) {
         try {
-            logger.info("Call sendNFe() method");
+            log.info("Call sendNFe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -37,7 +35,7 @@ public class NFeAPI {
             dto.setPassword(password);
 
             String json = FiscalHelper.validation(nfe);
-            logger.info("JSON para envio: " + json);
+            log.info("JSON para envio: " + json);
 
             ObjectMapper mapper = new ObjectMapper();
             FiscalDocumentDTO fiscalDocumentDTO = mapper.readValue(json, FiscalDocumentDTO.class);
@@ -55,7 +53,7 @@ public class NFeAPI {
 
             return Response.status(500).entity("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ.").build();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return Response.status(500).entity("Exception: ".concat(ex.getMessage())).build();
         }
     }
@@ -69,7 +67,7 @@ public class NFeAPI {
                               @FormParam("chave") String key,
                               @FormParam("justificativa") String justification) {
         try {
-            logger.info("Call cancelNFe() method");
+            log.info("Call cancelNFe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -84,7 +82,7 @@ public class NFeAPI {
 
             return Response.status(200).entity(controller.cancel(dto)).build();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return Response.status(500).entity("Exception: ".concat(ex.getMessage())).build();
         }
     }
@@ -101,7 +99,7 @@ public class NFeAPI {
                                    @FormParam("final") String finalNumber,
                                    @FormParam("justificativa") String justification) {
         try {
-            logger.info("Call disablementNFe() method");
+            log.info("Call disablementNFe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -120,7 +118,7 @@ public class NFeAPI {
 
             return Response.status(200).entity(controller.disablement(dto)).build();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return Response.status(500).entity("Exception: ".concat(ex.getMessage())).build();
         }
     }
@@ -134,7 +132,7 @@ public class NFeAPI {
                            @FormParam("senha") String password) {
 
         try {
-            logger.info("Call status() method");
+            log.info("Call status() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -148,7 +146,7 @@ public class NFeAPI {
 
             return Response.status(200).entity(controller.status(dto)).build();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return Response.status(500).entity("Exception: ".concat(ex.getMessage())).build();
         }
     }

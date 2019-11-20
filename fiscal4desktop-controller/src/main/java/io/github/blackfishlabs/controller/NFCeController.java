@@ -25,8 +25,7 @@ import io.github.blackfishlabs.fiscal4desktop.common.helper.FiscalHelper;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
 import io.github.blackfishlabs.fiscal4desktop.infra.NFeConfiguration;
 import io.github.blackfishlabs.service.NFeService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Date;
 import java.util.List;
@@ -34,9 +33,8 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+@Slf4j
 public class NFCeController {
-
-    private static final Logger logger = LogManager.getLogger(NFCeController.class);
 
     public String send(FiscalSendDTO sendDTO) throws Exception {
 
@@ -67,7 +65,7 @@ public class NFCeController {
                     send.getRetorno().getStatus().concat(" - ").
                             concat(send.getRetorno().getMotivo()));
 
-            logger.info("Nota autorizada pelo protocolo: ".concat(send.getRetorno().getProtocoloInfo().getNumeroProtocolo()));
+            log.info("Nota autorizada pelo protocolo: ".concat(send.getRetorno().getProtocoloInfo().getNumeroProtocolo()));
 
             FileHelper.saveFilesAndSendToEmailAttach(send);
             saveDocInDatabase(send);
@@ -75,7 +73,7 @@ public class NFCeController {
             return translator.response(send);
         } else {
             String contingency = service.contingency(configuration, nfLoteEnvio);
-            logger.info("Nota assinada em contingência: ".concat(contingency));
+            log.info("Nota assinada em contingência: ".concat(contingency));
 
             saveDocInDatabase(contingency, contingencyTranslator);
 
@@ -108,7 +106,7 @@ public class NFCeController {
                 checkArgument(info.getCodigoStatus().equals(135),
                         info.getCodigoStatus().toString().concat(" - ").
                                 concat(info.getMotivo()));
-                logger.info("Nota cancelada pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
+                log.info("Nota cancelada pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
 
                 FiscalStatusDocumentTranslator fiscalStatusDocumentTranslator = new FiscalStatusDocumentTranslator();
 
@@ -135,7 +133,7 @@ public class NFCeController {
 
                         FileHelper.exportXml(procEventNFe, xmlPath);
                     } catch (Exception e) {
-                        logger.error(e.getMessage());
+                        log.error(e.getMessage());
                     }
 
                     nfCeEntity.get().setXmlCancel(procEventNFe);
@@ -167,12 +165,12 @@ public class NFCeController {
     private void saveDocInDatabase(String xml, ContingencyTranslator contingencyTranslator) {
         new Thread(() -> {
             try {
-                logger.info("Salvando documentos no Banco de Dados");
+                log.info("Salvando documentos no Banco de Dados");
 
                 new ContigencyDAO().save(contingencyTranslator.toEntity(xml));
             } catch (Exception e) {
-                logger.error("Erro ao gravar no banco de dados!");
-                logger.error(e.getMessage());
+                log.error("Erro ao gravar no banco de dados!");
+                log.error(e.getMessage());
             }
         }).start();
     }
@@ -182,12 +180,12 @@ public class NFCeController {
 
         new Thread(() -> {
             try {
-                logger.info("Salvando documentos no Banco de Dados");
+                log.info("Salvando documentos no Banco de Dados");
                 Optional<NFNota> document = send.getLoteAssinado().getNotas().stream().findFirst();
                 document.ifPresent(d -> new NFCeDAO().save(translator.toEntity(send)));
             } catch (Exception e) {
-                logger.error("Erro ao gravar no banco de dados!");
-                logger.error(e.getMessage());
+                log.error("Erro ao gravar no banco de dados!");
+                log.error(e.getMessage());
             }
         }).start();
     }

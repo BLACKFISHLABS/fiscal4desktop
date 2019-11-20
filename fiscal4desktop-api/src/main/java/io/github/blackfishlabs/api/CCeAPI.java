@@ -4,16 +4,14 @@ import io.github.blackfishlabs.controller.CCeController;
 import io.github.blackfishlabs.controller.dto.FiscalEventCCeDTO;
 import io.github.blackfishlabs.fiscal4desktop.common.helper.FiscalHelper;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 
+@Slf4j
 @Path("/cce")
 public class CCeAPI {
-
-    private static final Logger logger = LogManager.getLogger(CCeAPI.class);
 
     @POST
     @Path("/enviar")
@@ -24,7 +22,7 @@ public class CCeAPI {
                             @FormParam("chave") String key,
                             @FormParam("texto") String correction) {
         try {
-            logger.info("Call sendCCe() method");
+            log.info("Call sendCCe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -39,7 +37,7 @@ public class CCeAPI {
 
             return Response.status(200).entity(controller.sendCCe(dto)).build();
         } catch (Exception ex) {
-            logger.error(ex.getMessage());
+            log.error(ex.getMessage());
             return Response.status(500).entity("Exception: ".concat(ex.getMessage())).build();
         }
     }

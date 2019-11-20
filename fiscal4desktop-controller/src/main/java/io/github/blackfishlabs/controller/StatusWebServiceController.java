@@ -4,15 +4,14 @@ import br.indie.fiscal4j.nfe400.classes.statusservico.consulta.NFStatusServicoCo
 import io.github.blackfishlabs.controller.dto.FiscalStatusWebServiceDTO;
 import io.github.blackfishlabs.controller.translator.FiscalStatusWSTranslator;
 import io.github.blackfishlabs.service.StatusWSService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
 import java.net.URLConnection;
 
+@Slf4j
 public class StatusWebServiceController {
 
-    private static final Logger logger = LogManager.getLogger(StatusWebServiceController.class);
     private static final String GOOGLE = "http://www.google.com.br";
 
     public String getStatusWebService(FiscalStatusWebServiceDTO dto) throws Exception {
@@ -35,7 +34,7 @@ public class StatusWebServiceController {
 
             statusWebService = statusWSService.getStatusWebService(translator.fromDTO(dto));
         } catch (Exception e) {
-            logger.error("Houve um erro na conexão: ".concat(e.getMessage()));
+            log.error("Houve um erro na conexão: ".concat(e.getMessage()));
             return false;
         }
 

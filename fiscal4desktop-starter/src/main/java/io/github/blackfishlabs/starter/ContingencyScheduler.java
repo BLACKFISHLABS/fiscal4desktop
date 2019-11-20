@@ -15,26 +15,24 @@ import io.github.blackfishlabs.fiscal4desktop.common.helper.FileHelper;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
 import io.github.blackfishlabs.fiscal4desktop.infra.NFeConfiguration;
 import io.github.blackfishlabs.service.NFeService;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+@Slf4j
 class ContingencyScheduler {
 
-    private static final Logger logger = LogManager.getLogger(ContingencyScheduler.class);
-
     static void execute() {
-        logger.info(">> Thread de Verificação das notas em contingência iniciado");
+        log.info(">> Thread de Verificação das notas em contingência iniciado");
 
         List<ContingencyEntity> filter = new ContigencyDAO().filter("from ContingencyEntity");
         if (filter.isEmpty()) {
-            logger.info(">> Nenhuma nota em contingencia foi encontrada!");
+            log.info(">> Nenhuma nota em contingencia foi encontrada!");
             return;
         } else {
-            logger.info(">> Foram encontradas " + filter.size() + " notas em contingência.");
+            log.info(">> Foram encontradas " + filter.size() + " notas em contingência.");
         }
 
         filter.forEach(f -> {
@@ -50,7 +48,7 @@ class ContingencyScheduler {
                 try {
                     final String xml = f.getXml();
 
-                    logger.info("Enviando " + xml);
+                    log.info("Enviando " + xml);
                     NFLoteEnvioRetorno send = service.send(new NFeConfiguration(f.getEmitter(), f.getKey()), xml);
 
                     if (send.getStatus().equals("539"))
@@ -60,14 +58,14 @@ class ContingencyScheduler {
                             send.getStatus().concat(" - ").
                                     concat(send.getMotivo()));
 
-                    logger.info("Nota autorizada pelo protocolo: ".concat(send.getProtocoloInfo().getNumeroProtocolo()));
+                    log.info("Nota autorizada pelo protocolo: ".concat(send.getProtocoloInfo().getNumeroProtocolo()));
 
                     new ContigencyDAO().delete(f);
                     FileHelper.saveFilesAndSendToEmailAttach(send, xml);
                     saveDocInDatabase(send, xml);
 
                 } catch (Exception e) {
-                    logger.error(e.getMessage());
+                    log.error(e.getMessage());
                 }
             }
         });
@@ -81,12 +79,12 @@ class ContingencyScheduler {
 
         new Thread(() -> {
             try {
-                logger.info("Salvando documentos no Banco de Dados");
+                log.info("Salvando documentos no Banco de Dados");
                 new NFCeDAO().save(nfCeTranslator.toEntity(nota, send, xml));
 
             } catch (Exception e) {
-                logger.error("Erro ao gravar no banco de dados!");
-                logger.error(e.getMessage());
+                log.error("Erro ao gravar no banco de dados!");
+                log.error(e.getMessage());
             }
         }).start();
     }

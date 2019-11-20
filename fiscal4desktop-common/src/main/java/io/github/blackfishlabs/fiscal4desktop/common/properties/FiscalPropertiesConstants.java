@@ -13,6 +13,8 @@ public final class FiscalPropertiesConstants {
     static final String KEY_PARAM_CNPJ = "param.cnpj";
     static final String KEY_PARAM_PASSWORD = "param.password";
     static final String KEY_PARAM_EMAIL_ACCOUNTANT = "param.email.accountant";
+    static final String KEY_PARAM_EMAIL_COMPANY = "param.email.company";
+    static final String KEY_PARAM_EMAIL_KEY = "param.email.key";
 
     private FiscalPropertiesConstants() {
         throw new AssertionError();

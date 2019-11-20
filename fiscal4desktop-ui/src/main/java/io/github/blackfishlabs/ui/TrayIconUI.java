@@ -9,8 +9,7 @@ import io.github.blackfishlabs.fiscal4desktop.common.helper.FiscalConstantHelper
 import io.github.blackfishlabs.fiscal4desktop.common.helper.FiscalHelper;
 import io.github.blackfishlabs.fiscal4desktop.common.helper.ZipHelper;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -29,9 +28,9 @@ import java.util.List;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
+@Slf4j
 public class TrayIconUI {
 
-    private static final Logger logger = LogManager.getLogger(TrayIconUI.class);
     private static final String LOGO_PNG = "logo_min.png";
     private static final String BLACKFISH_LABS = "BLACKFISH LABS";
 
@@ -148,7 +147,7 @@ public class TrayIconUI {
                 }
 
             } catch (Exception e2) {
-                logger.error(e2.getMessage());
+                log.error(e2.getMessage());
                 show(e2.getMessage());
             }
         });
@@ -230,16 +229,19 @@ public class TrayIconUI {
 
                     outputPath.concat(FiscalConstantHelper.CCE_ZIP));
 
-            logger.info(EmailHelper.sendDocumentByEmail(files, "Envio de XML", FiscalProperties.getInstance().getCNPJ(), FiscalProperties.getInstance().getCNPJ(), email));
+            log.info(EmailHelper.sendDocumentByEmailXML(files,
+                    "Envio de XML",
+                    FiscalProperties.getInstance().getCNPJ(),
+                    FiscalProperties.getInstance().getCNPJ(),
+                    email));
 
             files.forEach(f -> {
                 try {
                     File file = new File(f);
-                    if (file.delete()) {
-                        logger.info(file.getName() + " is deleted!");
-                    } else {
-                        logger.info("Delete operation is failed.");
-                    }
+                    if (file.delete())
+                        log.info(file.getName() + " is deleted!");
+                    else
+                        log.info("Delete operation is failed.");
                 } catch (Exception e2) {
                     e2.printStackTrace();
                 }
@@ -259,17 +261,13 @@ public class TrayIconUI {
         JOptionPane.showMessageDialog(null, message, BLACKFISH_LABS, JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private static void showConsole(String message) {
-        System.out.println(message);
-    }
-
     private static Image createImage(final String path) {
         final File file = new File(path);
         Image img = null;
         try {
             img = ImageIO.read(file);
         } catch (IOException e) {
-            e.printStackTrace();
+            show("try create TrayIcon with null Image");
         }
         return img;
     }
