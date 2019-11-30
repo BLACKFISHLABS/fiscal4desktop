@@ -22,7 +22,7 @@ public class NFeBuildAllCacerts extends DFCadeiaCertificados {
             final NFeBuildAllCacerts buildCacerts = new NFeBuildAllCacerts(FiscalProperties
                     .getInstance()
                     .getDirCertificate()
-                    .concat("cadeia.jks"));
+                    .concat("production.jks"));
 
             FileUtils.writeByteArrayToFile(
                     new File(buildCacerts.getPath()),

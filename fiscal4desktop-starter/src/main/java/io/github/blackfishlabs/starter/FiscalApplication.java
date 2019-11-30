@@ -34,8 +34,8 @@ public class FiscalApplication {
         SwingUtilities.invokeLater(TrayIconUI::createAndShowGUI);
 
         log.info(ServerApplication.start(8182));
-        verifyCertificate();
         log.info(">> Workspace: " + FiscalProperties.getInstance().getDirApplication());
+        verifyCertificate();
 
         scheduler_contingency.scheduleAtFixedRate(ContingencyScheduler::execute, 1, 1, TimeUnit.HOURS);
     }
