@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: Emissor Fiscal 4 Desktop
+    description: Projeto desenvolvido por BLACKFISH LABS
+    version: 1.0.0
+  profiles:
+    active: prod
+
+server:
+  contextPath: /
+  port: 8182
