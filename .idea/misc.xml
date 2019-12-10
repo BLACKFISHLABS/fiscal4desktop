@@ -1,26 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
-  <component name="ExternalStorageConfigurationManager" enabled="true" />
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
-    <option name="ignoredFiles">
-      <set>
-        <option value="$PROJECT_DIR$/fiscal4desktop-api/pom.xml" />
-        <option value="$PROJECT_DIR$/fiscal4desktop-common/pom.xml" />
-        <option value="$PROJECT_DIR$/fiscal4desktop-controller/pom.xml" />
-        <option value="$PROJECT_DIR$/fiscal4desktop-domain/pom.xml" />
-        <option value="$PROJECT_DIR$/fiscal4desktop-infra/pom.xml" />
-        <option value="$PROJECT_DIR$/fiscal4desktop-service/pom.xml" />
-        <option value="$PROJECT_DIR$/fiscal4desktop-starter/pom.xml" />
-        <option value="$PROJECT_DIR$/fiscal4desktop-ui/pom.xml" />
-      </set>
-    </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" project-jdk-name="1.8.0_222" project-jdk-type="JavaSDK">
-    <output url="file://$PROJECT_DIR$/out" />
-  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="11" project-jdk-type="JavaSDK" />
 </project>

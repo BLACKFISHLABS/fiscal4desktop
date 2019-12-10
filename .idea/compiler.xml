@@ -10,27 +10,12 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
-      <module name="fiscal4desktop-api" target="1.8" />
-      <module name="fiscal4desktop-common" target="1.8" />
-      <module name="fiscal4desktop-controller" target="1.8" />
-      <module name="fiscal4desktop-domain" target="1.8" />
-      <module name="fiscal4desktop-infra" target="1.8" />
-      <module name="fiscal4desktop-service" target="1.8" />
-      <module name="fiscal4desktop-starter" target="1.8" />
-      <module name="fiscal4desktop-ui" target="1.8" />
+      <module name="fiscal4desktop" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="fiscal4desktop" options="-parameters" />
-      <module name="fiscal4desktop-api" options="-parameters" />
-      <module name="fiscal4desktop-common" options="-parameters" />
-      <module name="fiscal4desktop-controller" options="-parameters" />
-      <module name="fiscal4desktop-domain" options="-parameters" />
-      <module name="fiscal4desktop-infra" options="-parameters" />
-      <module name="fiscal4desktop-service" options="-parameters" />
-      <module name="fiscal4desktop-starter" options="-parameters -parameters" />
-      <module name="fiscal4desktop-ui" options="-parameters" />
     </option>
   </component>
 </project>
