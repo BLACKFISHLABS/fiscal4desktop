@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Strings.isNullOrEmpty;
 
 @Service
 public class NFCeController {
@@ -104,7 +105,28 @@ public class NFCeController {
 
         if (nfCeEntity.isPresent()) {
             dto.setProtocol(nfCeEntity.get().getProtocol());
+        } else {
+            LOGGER.info(String.format("Nota %s não encontrada no banco de dados local, buscando da sefaz...", dto.getKey()));
+            FiscalStatusDocumentTranslator fiscalStatusDocumentTranslator = new FiscalStatusDocumentTranslator();
 
+            FiscalStatusDocumentDTO fiscalStatusDocumentDTO = new FiscalStatusDocumentDTO();
+            fiscalStatusDocumentDTO.setEmitter(dto.getEmitter());
+            fiscalStatusDocumentDTO.setPassword(dto.getPassword());
+            fiscalStatusDocumentDTO.setKey(dto.getKey());
+
+            NFeService nFeService = new NFeService();
+            NFNotaConsultaRetorno status = nFeService.status(fiscalStatusDocumentTranslator.fromDTO(fiscalStatusDocumentDTO));
+            Optional<NFProtocoloEvento> proc = status.getProtocoloEvento().stream().findFirst();
+
+            if (proc.isPresent()) {
+                final String procEventNFe = proc.get().toString();
+                dto.setProtocol(procEventNFe);
+            } else {
+                LOGGER.info(String.format("Protocolo %s não encontrada no busca da chave", dto.getKey()));
+            }
+        }
+
+        if (!isNullOrEmpty(dto.getProtocol())) {
             NFEnviaEventoRetorno cancel = service.cancel(translator.fromDTO(dto));
             Optional<NFEventoRetorno> event = cancel.getEventoRetorno().stream().findFirst();
 
@@ -144,19 +166,17 @@ public class NFCeController {
                         LOGGER.error(e.getMessage());
                     }
 
-                    nfCeEntity.get().setXmlCancel(procEventNFe);
-                    nfCeEntity.get().setProtocolCancel(event.get().getInfoEventoRetorno().getNumeroProtocolo());
-
-                    nfCeRepository.save(nfCeEntity.get());
-
-                    return translator.response(cancel);
+                    if (nfCeEntity.isPresent()) {
+                        nfCeEntity.get().setXmlCancel(procEventNFe);
+                        nfCeEntity.get().setProtocolCancel(event.get().getInfoEventoRetorno().getNumeroProtocolo());
+                        nfCeRepository.save(nfCeEntity.get());
+                    }
                 }
+                return translator.response(cancel);
             }
-
-        } else
-            throw new RuntimeException(String.format("Nota %s não encontrada no banco de dados local", dto.getKey()));
-
-        return "Não houve o cancelamento da nota: ".concat(dto.getKey());
+            return "Não houve o cancelamento da nota, pois não há retorno do evento: ".concat(dto.getKey());
+        }
+        return "Não houve o cancelamento da nota, pois o protocolo não foi encontrado na chave: ".concat(dto.getKey());
     }
 
     public String disablement(FiscalDisablementDTO dto) throws Exception {

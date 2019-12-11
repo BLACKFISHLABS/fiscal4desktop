@@ -10,7 +10,7 @@
     </parent>
     <groupId>io.github.blackfishlabs.fiscal4desktop</groupId>
     <artifactId>fiscal4desktop</artifactId>
-    <version>1.0.0-RELEASE</version>
+    <version>0.0.1-SNAPSHOT</version>
     <name>fiscal4desktop</name>
     <description>Fiscal4Desktop project for Spring Boot</description>
 
