@@ -5,9 +5,9 @@ import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties
 import io.github.blackfishlabs.fiscal4desktop.ui.TrayIconUI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContext;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.swing.*;
 import java.io.FileInputStream;
@@ -33,7 +33,7 @@ public class FiscalApplication {
     private static final ScheduledExecutorService scheduler_contingency = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) throws UnknownHostException {
-        ApplicationContext app = SpringApplication.run(ApplicationConfiguration.class, args);
+        ConfigurableApplicationContext app = new SpringApplicationBuilder(ApplicationConfiguration.class).headless(false).run(args);
 
         String applicationName = app.getEnvironment().getProperty("spring.application.name");
         String port = app.getEnvironment().getProperty("server.port");

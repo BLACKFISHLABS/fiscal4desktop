@@ -116,12 +116,11 @@ public class NFCeController {
 
             NFeService nFeService = new NFeService();
             NFNotaConsultaRetorno status = nFeService.status(fiscalStatusDocumentTranslator.fromDTO(fiscalStatusDocumentDTO));
-            Optional<NFProtocoloEvento> proc = status.getProtocoloEvento().stream().findFirst();
 
-            if (proc.isPresent()) {
-                final String procEventNFe = proc.get().toString();
-                dto.setProtocol(procEventNFe);
+            if ("100".equals(status.getStatus())) {
+                dto.setProtocol(status.getProtocolo().getProtocoloInfo().getNumeroProtocolo());
             } else {
+                LOGGER.error(status.getMotivo());
                 LOGGER.info(String.format("Protocolo %s não encontrada no busca da chave", dto.getKey()));
             }
         }
