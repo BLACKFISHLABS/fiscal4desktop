@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -38,7 +39,7 @@ public class FileHelper {
     private static String xmlPath = "";
 
     public static void exportXml(String xml, String path) throws IOException {
-        FileUtils.writeStringToFile(new File(path), xml);
+        FileUtils.writeStringToFile(new File(path), xml, Charset.defaultCharset());
     }
 
     private static void exportPDF(byte[] pdf, String path) throws IOException {
