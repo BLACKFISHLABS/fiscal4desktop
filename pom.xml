@@ -107,7 +107,7 @@
         <dependency>
             <groupId>br.indie</groupId>
             <artifactId>fiscal4j</artifactId>
-            <version>4.0.1-RELEASE</version>
+            <version>4.1.1-RELEASE</version>
         </dependency>
 
     </dependencies>

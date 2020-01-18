@@ -1055,7 +1055,7 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
         final NFNotaInfoItemImpostoCOFINSAliquota cofins = new NFNotaInfoItemImpostoCOFINSAliquota();
 
         cofins.setSituacaoTributaria(NFNotaInfoSituacaoTributariaCOFINS.valueOfCodigo(dto.getCST()));
-        cofins.setValorBaseCalulo(new BigDecimal(dto.getVBC()));
+        cofins.setValorBaseCalculo(new BigDecimal(dto.getVBC()));
         cofins.setPercentualAliquota(new BigDecimal(dto.getPCOFINS()));
         cofins.setValor(new BigDecimal(dto.getVCOFINS()));
 
