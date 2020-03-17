@@ -17,4 +17,3 @@ Maven: 3.x
 
 ## Uso
 API para responder as chamadas da 'integration.dll' escrita em C
-

@@ -12,6 +12,7 @@ public final class FiscalConstantHelper {
 
     // IMAGES
     static final String LOGO_NFE = "logo_nfe.png";
+    static final String LOGO_MDFE = "logo_mdfe.png";
 
     // ZIPPED FILES
     public static final String NFE_ZIP = "-NFe.zip";

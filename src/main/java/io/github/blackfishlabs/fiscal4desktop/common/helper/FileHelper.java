@@ -223,11 +223,10 @@ public class FileHelper {
     }
 
     public static void exportFilesPDFOnly(MDFProcessado processed) throws Exception {
-
         MDFeDanfeReport report = new MDFeDanfeReport(processed);
 
-        byte[] bytes = Files.readAllBytes(Paths.get(FiscalProperties.getInstance().getDirImg().concat(FiscalConstantHelper.LOGO_NFE)));
-        byte[] pdf = report.gerarDanfeMDFe(bytes, "BLACKFISH LABS (blackfishlabs.github.io)");
+        byte[] bytes = Files.readAllBytes(Paths.get(FiscalProperties.getInstance().getDirImg().concat(FiscalConstantHelper.LOGO_MDFE)));
+        byte[] pdf = report.gerarDanfeMDFe(bytes, "");
 
         pdfPath = "";
         pdfPath = FiscalProperties.getInstance().getDirPDF()
