@@ -42,7 +42,7 @@ public class NFCeAPI {
             dto.setEmitter(emitter);
             dto.setPassword(password);
 
-            String json = FiscalHelper.validation(nfce);
+            String json = FiscalHelper.validationData(nfce);
             LOGGER.info("JSON para envio: " + json);
 
             ObjectMapper mapper = new ObjectMapper();

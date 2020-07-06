@@ -39,7 +39,7 @@ public class NFeAPI {
             dto.setEmitter(emitter);
             dto.setPassword(password);
 
-            String json = FiscalHelper.validation(nfe);
+            String json = FiscalHelper.validationData(nfe);
             LOGGER.info("JSON para envio: " + json);
 
             ObjectMapper mapper = new ObjectMapper();

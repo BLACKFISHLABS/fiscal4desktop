@@ -37,7 +37,7 @@ public class MDFeAPI {
             dto.setEmitter(emitter);
             dto.setPassword(password);
 
-            String json = FiscalHelper.validation(mdfe);
+            String json = FiscalHelper.validationData(mdfe);
             LOGGER.info("JSON para envio: " + json);
 
             ObjectMapper mapper = new ObjectMapper();

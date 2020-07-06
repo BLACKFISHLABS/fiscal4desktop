@@ -63,7 +63,6 @@ public class EmailHelper {
                         myAttach.setFilename(source.getName());
                         mail.addAttachments(myAttach);
                     } catch (IOException e) {
-                        e.printStackTrace();
                         LOGGER.error(e.getMessage());
                     }
                 }
@@ -82,7 +81,6 @@ public class EmailHelper {
             System.out.println(response.getBody());
             System.out.println(response.getHeaders());
         } catch (IOException ex) {
-            ex.printStackTrace();
             LOGGER.error(ex.getMessage());
         }
     }

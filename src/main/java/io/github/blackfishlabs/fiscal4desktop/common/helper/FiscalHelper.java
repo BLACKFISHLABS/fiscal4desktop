@@ -16,6 +16,7 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.X509Certificate;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.util.Base64;
 import java.util.Date;
@@ -25,20 +26,28 @@ import java.util.regex.Pattern;
 
 public class FiscalHelper {
 
+    private FiscalHelper() {
+    }
+
     private static final String VERSION_NFE = "4.00";
 
-    public static String validation(String nfe) {
-        String json = nfe.replaceAll("#", "\"");
+    // String stuffs
+    public static String removeAccent(String str) {
+        String validated = validationData(str).toUpperCase();
+        return Normalizer.normalize(validated, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
+    }
 
-        json = cleanText(json, "\r", "\n");
-
+    public static String validationData(String value) {
+        String json = value.trim();
+        json = json.replaceAll("#", "\"").trim();
         json = json.replaceAll("\\s+", " ").trim();
-        return json;
+        json = cleanText(json, "\r", "\n");
+        return json.trim();
     }
 
     private static String cleanText(String text, String... dirty) {
-        for (String d : dirty) {
-            text = text.replaceAll(d, "");
+        for (String value : dirty) {
+            text = text.replaceAll(value, "");
         }
         return text;
     }

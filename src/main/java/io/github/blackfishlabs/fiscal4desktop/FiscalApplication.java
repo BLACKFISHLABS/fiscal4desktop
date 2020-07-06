@@ -63,7 +63,7 @@ public class FiscalApplication {
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
-            e.printStackTrace();
+            LOGGER.error(">> " + e.getMessage());
         }
     }
 
