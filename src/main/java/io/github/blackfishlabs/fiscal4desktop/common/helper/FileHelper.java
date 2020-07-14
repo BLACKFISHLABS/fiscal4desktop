@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class FileHelper {
     private static String xmlPath = "";
 
     public static void exportXml(String xml, String path) throws IOException {
-        FileUtils.writeStringToFile(new File(path), xml, Charset.defaultCharset());
+        FileUtils.writeStringToFile(new File(path), xml, StandardCharsets.UTF_8);
     }
 
     private static void exportPDF(byte[] pdf, String path) throws IOException {
@@ -97,7 +97,6 @@ public class FileHelper {
                 }
             }).start();
 
-
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
         }
@@ -108,9 +107,7 @@ public class FileHelper {
         NFNota nota = loteEnvio.getNotas().get(0);
 
         List<String> nfeFiles = Lists.newArrayList();
-
         mountPath(nota, FiscalConstantHelper.NFCE_PATH_CONTINGENCY, nfeFiles);
-
         exportFiles(send, nota);
 
         return nfeFiles;
@@ -150,9 +147,7 @@ public class FileHelper {
 
         if (document.isPresent()) {
             String path = DFModelo.NFCE.equals(document.get().getInfo().getIdentificacao().getModelo()) ? FiscalConstantHelper.NFCE_PATH : FiscalConstantHelper.NFE_PATH;
-
             mountPath(document.get(), path, nfeFiles);
-
             exportFiles(nfLoteEnvioRetornoDados, document.get());
         }
 
@@ -160,14 +155,12 @@ public class FileHelper {
     }
 
     private static void exportFiles(NFLoteEnvioRetorno send, NFNota document) throws Exception {
-        final NFNotaProcessada procesed = FiscalHelper.getNFProcessed(send, document);
-
-        exportFiles(procesed);
+        final NFNotaProcessada processed = FiscalHelper.getNFProcessed(send, document);
+        exportFiles(processed);
     }
 
     private static void exportFiles(NFLoteEnvioRetornoDados nfLoteEnvioRetornoDados, NFNota document) throws Exception {
         final NFNotaProcessada processed = FiscalHelper.getNFProcessed(nfLoteEnvioRetornoDados, document);
-
         exportFiles(processed);
     }
 

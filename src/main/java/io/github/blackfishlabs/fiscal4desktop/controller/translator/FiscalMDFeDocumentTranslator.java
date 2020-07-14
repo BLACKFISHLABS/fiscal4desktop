@@ -49,7 +49,7 @@ public class FiscalMDFeDocumentTranslator implements Translator<FiscalMDFeDocume
         info.setAutorizacaoDownload(null);
         info.setEmitente(getEmitente(dto.getEmit()));
 
-        dto.getIde().setCMDF(StringUtils.leftPad(FiscalHelper.generateCNF(), 8, '0'));
+        dto.getIde().setCMDF(StringUtils.leftPad(FiscalHelper.generateCNF(), 8, "0"));
 
         info.setIdentificador(getCalculateID(dto));
         info.setIdentificacao(getIdentificacao(dto.getIde(), info.getIdentificador()));

@@ -103,14 +103,14 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
     public static String getCalculateID(FiscalDocumentDTO dto) {
         StringBuilder key = new StringBuilder();
 
-        key.append(StringUtils.leftPad(dto.getIde().getCUF(), 2, '0'));
-        key.append(StringUtils.leftPad(new DateTime(dto.getIde().getDhEmi()).toString("yyMM"), 4, '0'));
-        key.append(StringUtils.leftPad(dto.getEmit().getCNPJ().replaceAll("\\D", ""), 14, '0'));
-        key.append(StringUtils.leftPad(dto.getIde().getMod(), 2, '0'));
-        key.append(StringUtils.leftPad(dto.getIde().getSerie(), 3, '0'));
-        key.append(StringUtils.leftPad(String.valueOf(dto.getIde().getNNF()), 9, '0'));
-        key.append(StringUtils.leftPad(dto.getIde().getTpEmis(), 1, '0'));
-        key.append(StringUtils.leftPad(dto.getIde().getCNF(), 8, '0'));
+        key.append(StringUtils.leftPad(dto.getIde().getCUF(), 2, "0"));
+        key.append(StringUtils.leftPad(new DateTime(dto.getIde().getDhEmi()).toString("yyMM"), 4, "0"));
+        key.append(StringUtils.leftPad(dto.getEmit().getCNPJ().replaceAll("\\D", ""), 14, "0"));
+        key.append(StringUtils.leftPad(dto.getIde().getMod(), 2, "0"));
+        key.append(StringUtils.leftPad(dto.getIde().getSerie(), 3, "0"));
+        key.append(StringUtils.leftPad(String.valueOf(dto.getIde().getNNF()), 9, "0"));
+        key.append(StringUtils.leftPad(dto.getIde().getTpEmis(), 1, "0"));
+        key.append(StringUtils.leftPad(dto.getIde().getCNF(), 8, "0"));
         key.append(FiscalHelper.modulo11(key.toString()));
 
         return key.toString();
@@ -528,7 +528,7 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
 
         ide.setAmbiente(DFAmbiente.valueOfCodigo(dto.getTpAmb()));
         ide.setCodigoMunicipio(dto.getCMunFG());
-        ide.setCodigoRandomico(StringUtils.leftPad(FiscalHelper.generateCNF(), 8, '0'));
+        ide.setCodigoRandomico(StringUtils.leftPad(FiscalHelper.generateCNF(), 8, "0"));
         ide.setDataHoraEmissao(DateHelper.toZonedDateTime(DateTime.parse(dto.getDhEmi()).toDate()));
 
         if (dto.getMod().equals("55")) {
