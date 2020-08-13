@@ -119,16 +119,16 @@ public class FileHelper {
         String nf = nota.getInfo().getIdentificacao().getNumeroNota();
 
         pdfPath = "";
-        pdfPath = FiscalProperties.getInstance().getDirPDF()
-                .concat(path)
+        pdfPath = FiscalProperties.getInstance().getDirPDF().trim()
+                .concat(path.trim())
                 .concat(DateHelper.toDirFormat(new Date()))
                 .concat("/")
                 .concat(nf)
                 .concat(".pdf");
 
         xmlPath = "";
-        xmlPath = FiscalProperties.getInstance().getDirXML()
-                .concat(path)
+        xmlPath = FiscalProperties.getInstance().getDirXML().trim()
+                .concat(path.trim())
                 .concat(DateHelper.toDirFormat(new Date()))
                 .concat("/")
                 .concat(cfop)
@@ -206,7 +206,7 @@ public class FileHelper {
         byte[] pdf = report.gerarDanfeCCe();
 
         pdfPath = "";
-        pdfPath = FiscalProperties.getInstance().getDirPDF()
+        pdfPath = FiscalProperties.getInstance().getDirPDF().trim()
                 .concat(FiscalConstantHelper.CCE_PATH)
                 .concat(DateHelper.toDirFormat(new Date()))
                 .concat("/")
@@ -222,7 +222,7 @@ public class FileHelper {
         byte[] pdf = report.gerarDanfeMDFe(bytes, "");
 
         pdfPath = "";
-        pdfPath = FiscalProperties.getInstance().getDirPDF()
+        pdfPath = FiscalProperties.getInstance().getDirPDF().trim()
                 .concat(FiscalConstantHelper.MDFE_PATH)
                 .concat(DateHelper.toDirFormat(new Date()))
                 .concat("/")
