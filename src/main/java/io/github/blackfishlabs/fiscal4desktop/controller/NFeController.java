@@ -62,7 +62,7 @@ public class NFeController {
 
         LOGGER.info("Nota autorizada pelo protocolo: ".concat(send.getRetorno().getProtocoloInfo().getNumeroProtocolo()));
 
-        FileHelper.saveFilesAndSendToEmailAttach(send);
+        FileHelper.saveFilesAndSendToEmailAttach(send, "-nfe");
         saveDocInDatabase(send);
 
         return translator.response(send);

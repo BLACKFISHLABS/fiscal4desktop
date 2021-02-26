@@ -56,7 +56,7 @@ public class FiscalApplication {
         verifyCertificate();
 
         ContingencyScheduler contingencyScheduler = new ContingencyScheduler();
-        scheduler_contingency.scheduleAtFixedRate(contingencyScheduler::execute, 1, 1, TimeUnit.HOURS);
+        scheduler_contingency.scheduleAtFixedRate(contingencyScheduler::execute, 5, 15, TimeUnit.MINUTES);
     }
 
     private static void lookAndFeel() {

@@ -78,7 +78,7 @@ public class NFCeController {
 
             LOGGER.info("Nota autorizada pelo protocolo: ".concat(send.getRetorno().getProtocoloInfo().getNumeroProtocolo()));
 
-            FileHelper.saveFilesAndSendToEmailAttach(send);
+            FileHelper.saveFilesAndSendToEmailAttach(send, "-nfce");
             saveDocInDatabase(send);
 
             return translator.response(send);
@@ -90,7 +90,9 @@ public class NFCeController {
 
             NFLoteEnvio lotSender = new DFParser().loteParaObjeto(contingency);
             NFNota first = lotSender.getNotas().get(0);
-            FileHelper.exportFilesPDFOnly(FiscalHelper.getNFProcessed(first));
+
+            FileHelper.exportFilesXMLOnly(FiscalHelper.getNFProcessed(first), "-nfce-contingencia");
+            FileHelper.exportFilesPDFOnly(FiscalHelper.getNFProcessed(first), "-nfce-contingencia");
 
             return translator.response(first);
         }

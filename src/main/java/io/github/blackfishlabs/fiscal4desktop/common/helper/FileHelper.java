@@ -46,12 +46,12 @@ public class FileHelper {
         FileUtils.writeByteArrayToFile(new File(path), pdf);
     }
 
-    public static void saveFilesAndSendToEmailAttach(NFLoteEnvioRetornoDados send) {
+    public static void saveFilesAndSendToEmailAttach(NFLoteEnvioRetornoDados send, String auxString) {
         try {
             LOGGER.info("Salvando arquivos na pasta de XML e PDF");
 
             List<String> files;
-            files = saveFiles(send);
+            files = saveFiles(send, auxString);
             files.forEach(f -> LOGGER.info("Arquivo salvo: ".concat(f)));
 
             Optional<NFNota> doc = send.getLoteAssinado().getNotas().stream().findFirst();
@@ -74,14 +74,14 @@ public class FileHelper {
         }
     }
 
-    public static void saveFilesAndSendToEmailAttach(NFLoteEnvioRetorno send, String xml) {
+    public static void saveFilesAndSendToEmailAttach(NFLoteEnvioRetorno send, String xml, String auxString) {
         NFLoteEnvio loteEnvio = new DFParser().loteParaObjeto(xml);
         NFNota nota = loteEnvio.getNotas().get(0);
 
         try {
             LOGGER.info("Salvando arquivos na pasta de XML e PDF");
             List<String> files;
-            files = saveFiles(send, xml);
+            files = saveFiles(send, xml, auxString);
             files.forEach(f -> LOGGER.info("Arquivo salvo: ".concat(f)));
 
             new Thread(() -> {
@@ -102,18 +102,18 @@ public class FileHelper {
         }
     }
 
-    private static List<String> saveFiles(NFLoteEnvioRetorno send, String xml) throws Exception {
+    private static List<String> saveFiles(NFLoteEnvioRetorno send, String xml, String auxString) throws Exception {
         NFLoteEnvio loteEnvio = new DFParser().loteParaObjeto(xml);
         NFNota nota = loteEnvio.getNotas().get(0);
 
         List<String> nfeFiles = Lists.newArrayList();
-        mountPath(nota, FiscalConstantHelper.NFCE_PATH_CONTINGENCY, nfeFiles);
+        mountPath(nota, FiscalConstantHelper.NFCE_PATH_CONTINGENCY, nfeFiles, auxString);
         exportFiles(send, nota);
 
         return nfeFiles;
     }
 
-    private static void mountPath(NFNota nota, String path, List<String> nfeFiles) {
+    private static void mountPath(NFNota nota, String path, List<String> nfeFiles, String auxString) {
         String key = nota.getInfo().getChaveAcesso();
         String cfop = nota.getInfo().getItens().get(0).getProduto().getCfop();
         String nf = nota.getInfo().getIdentificacao().getNumeroNota();
@@ -124,6 +124,7 @@ public class FileHelper {
                 .concat(DateHelper.toDirFormat(new Date()))
                 .concat("/")
                 .concat(nf)
+                .concat(auxString)
                 .concat(".pdf");
 
         xmlPath = "";
@@ -134,20 +135,21 @@ public class FileHelper {
                 .concat(cfop)
                 .concat("/")
                 .concat(key)
+                .concat(auxString)
                 .concat(".xml");
 
         nfeFiles.add(pdfPath);
         nfeFiles.add(xmlPath);
     }
 
-    private static List<String> saveFiles(NFLoteEnvioRetornoDados nfLoteEnvioRetornoDados) throws Exception {
+    private static List<String> saveFiles(NFLoteEnvioRetornoDados nfLoteEnvioRetornoDados, String auxString) throws Exception {
         List<String> nfeFiles = Lists.newArrayList();
 
         Optional<NFNota> document = nfLoteEnvioRetornoDados.getLoteAssinado().getNotas().stream().findFirst();
 
         if (document.isPresent()) {
             String path = DFModelo.NFCE.equals(document.get().getInfo().getIdentificacao().getModelo()) ? FiscalConstantHelper.NFCE_PATH : FiscalConstantHelper.NFE_PATH;
-            mountPath(document.get(), path, nfeFiles);
+            mountPath(document.get(), path, nfeFiles, auxString);
             exportFiles(nfLoteEnvioRetornoDados, document.get());
         }
 
@@ -185,7 +187,12 @@ public class FileHelper {
         exportPDF(pdf, pdfPath);
     }
 
-    public static void exportFilesPDFOnly(NFNotaProcessada processed) throws Exception {
+    public static void exportFilesXMLOnly(NFNotaProcessada processed, String auxString) throws Exception {
+        mountPath(processed.getNota(), FiscalConstantHelper.NFCE_PATH, Lists.newArrayList(), auxString);
+        exportXml(processed.toString(), xmlPath);
+    }
+
+    public static void exportFilesPDFOnly(NFNotaProcessada processed, String auxString) throws Exception {
         byte[] pdf;
         NFDanfeReport report = new NFDanfeReport(processed.toString());
         ArrayList<NFCePagamento> nfCePagamentos = new ArrayList<>();
@@ -196,7 +203,7 @@ public class FileHelper {
 
         pdf = report.gerarDanfeNFCe("", true, nfCePagamentos.toArray(new NFCePagamento[0]));
 
-        mountPath(processed.getNota(), FiscalConstantHelper.NFCE_PATH, Lists.newArrayList());
+        mountPath(processed.getNota(), FiscalConstantHelper.NFCE_PATH, Lists.newArrayList(), auxString);
         exportPDF(pdf, pdfPath);
     }
 

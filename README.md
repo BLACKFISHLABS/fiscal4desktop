@@ -1,4 +1,5 @@
 # fiscal4desktop
+
 Módulo Desktop para emissão de Documentos Eletrônicos
 
 ## API para lib fiscal4j ###
@@ -11,9 +12,11 @@ Módulo Desktop para emissão de Documentos Eletrônicos
 | CC-e                | OK             |
 
 ## Requisitos
+
 JDK: 1.8
 <br>
 Maven: 3.x
 
 ## Uso
+
 API para responder as chamadas da 'integration.dll' escrita em C

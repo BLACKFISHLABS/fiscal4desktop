@@ -33,7 +33,7 @@ class ContingencyScheduler {
     private NFCeRepository nfCeRepository;
 
     public void execute() {
-        LOGGER.info(">> Thread de Verificação das notas em contingência iniciado");
+        LOGGER.info(">> Thread de Verificação das notas em contingência iniciada");
 
         List<ContingencyEntity> filter = contingencyRepository.findAll();
         if (filter.isEmpty()) {
@@ -69,7 +69,7 @@ class ContingencyScheduler {
                     LOGGER.info("Nota autorizada pelo protocolo: ".concat(send.getProtocoloInfo().getNumeroProtocolo()));
 
                     contingencyRepository.delete(f);
-                    FileHelper.saveFilesAndSendToEmailAttach(send, xml);
+                    FileHelper.saveFilesAndSendToEmailAttach(send, xml, "-nfce");
                     saveDocInDatabase(send, xml);
 
                 } catch (Exception e) {
