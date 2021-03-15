@@ -70,6 +70,9 @@ public class IdeDTO extends BasicDTO {
     @JsonProperty("indPres")
     private String indPres;
 
+    @JsonProperty("indIntermed")
+    private String indIntermed;
+
     @JsonProperty("procEmi")
     private String procEmi;
 

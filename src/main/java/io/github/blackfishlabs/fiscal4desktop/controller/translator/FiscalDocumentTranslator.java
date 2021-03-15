@@ -568,6 +568,7 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
         ide.setIdentificadorLocalDestinoOperacao(NFIdentificadorLocalDestinoOperacao.valueOfCodigo(dto.getIdDest()));
         ide.setOperacaoConsumidorFinal(NFOperacaoConsumidorFinal.valueOfCodigo(dto.getIndFinal()));
         ide.setIndicadorPresencaComprador(NFIndicadorPresencaComprador.valueOfCodigo(dto.getIndPres()));
+        ide.setIndIntermed(NFIndicadorIntermediador.valueOfCodigo(dto.getIndIntermed()));
 
         return ide;
     }
