@@ -176,7 +176,7 @@ public class EmailHelper {
     }
 
     private static boolean validate(String email) {
-        if (email.equals("no@mail.com")) return false;
+        if (email.equals("dev.blackfishlabs@gmail.com")) return false;
         if (email.trim().length() < 6) {
             return false;
         } else {

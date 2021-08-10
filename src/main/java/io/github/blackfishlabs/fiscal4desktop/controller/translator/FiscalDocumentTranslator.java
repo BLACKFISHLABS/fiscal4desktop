@@ -378,7 +378,7 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
             destinatario.setCpf(dto.getCPF());
         }
 
-        destinatario.setEmail(isNullOrEmpty(dto.getEmail()) ? "no@mail.com" : dto.getEmail());
+        destinatario.setEmail(isNullOrEmpty(dto.getEmail()) ? "dev.blackfishlabs@gmail.com" : dto.getEmail());
         destinatario.setEndereco(getNFEnderecoDest(dto.getEnderDest()));
         destinatario.setInscricaoEstadual(dto.getIE());
         destinatario.setRazaoSocial(dto.getXNome());
@@ -568,7 +568,11 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
         ide.setIdentificadorLocalDestinoOperacao(NFIdentificadorLocalDestinoOperacao.valueOfCodigo(dto.getIdDest()));
         ide.setOperacaoConsumidorFinal(NFOperacaoConsumidorFinal.valueOfCodigo(dto.getIndFinal()));
         ide.setIndicadorPresencaComprador(NFIndicadorPresencaComprador.valueOfCodigo(dto.getIndPres()));
-        ide.setIndIntermed(NFIndicadorIntermediador.valueOfCodigo(dto.getIndIntermed()));
+
+        // WARNING: Only Hom Works!
+        if (nonNull(dto.getIndIntermed())) {
+            ide.setIndIntermed(NFIndicadorIntermediador.valueOfCodigo(dto.getIndIntermed()));
+        }
 
         return ide;
     }
