@@ -28,6 +28,10 @@ public class EmailHelper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailHelper.class);
 
+    public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
+            Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
+
+
     private static void sendEmailSendGrid(String emailFrom,
                                           String emailTo,
                                           String subject,
@@ -116,11 +120,11 @@ public class EmailHelper {
         if (isNullOrEmpty(email)) {
             return "Email não cadastrado.";
         } else {
-            if (validate(FiscalProperties.getInstance().getEmailCompany()) && validate(email)) {
+            if (validateWithRegex(FiscalProperties.getInstance().getEmailCompany()) && validateWithRegex(email)) {
                 EmailHelper.sendEmailSendGrid(FiscalProperties.getInstance().getEmailCompany(), email, subject, message.toString(), attachments);
                 return "Email enviado para ".concat(email);
             } else {
-                return "Email inválido: " + email;
+                return "Email inválido: ".concat(email);
             }
         }
     }
@@ -166,30 +170,19 @@ public class EmailHelper {
         if (isNullOrEmpty(email)) {
             return "Email não cadastrado.";
         } else {
-            if (validate(FiscalProperties.getInstance().getEmailCompany()) && validate(email)) {
+            if (validateWithRegex(FiscalProperties.getInstance().getEmailCompany()) && validateWithRegex(email)) {
                 EmailHelper.sendEmailSendGrid(FiscalProperties.getInstance().getEmailCompany(), email, subject, message.toString(), attachments);
                 return "Email enviado para ".concat(email);
             } else {
-                return "Email inválido: " + email;
+                return "Email inválido: ".concat(email);
             }
         }
     }
 
-    private static boolean validate(String email) {
-        if (email.equals("dev.blackfishlabs@gmail.com")) return false;
-        if (email.trim().length() < 6) {
-            return false;
-        } else {
-            Pattern pattern;
-            Matcher matcher;
-            final String EMAIL_PATTERN
-                    = "^[_A-Za-z0-9-\\+]+(\\.[_A-Za-z0-9-]+)*@"
-                    + "[A-Za-z0-9-]+(\\.[A-Za-z0-9]+)*(\\.[A-Za-z]{2,})$";
-            pattern = Pattern.compile(EMAIL_PATTERN);
-            matcher = pattern.matcher(email);
 
-            return matcher.matches();
-        }
+    public static boolean validateWithRegex(String emailStr) {
+        Matcher matcher = VALID_EMAIL_ADDRESS_REGEX.matcher(emailStr);
+        return matcher.find();
     }
 
 }
