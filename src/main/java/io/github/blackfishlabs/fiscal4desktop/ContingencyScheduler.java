@@ -69,7 +69,7 @@ class ContingencyScheduler {
                     LOGGER.info("Nota autorizada pelo protocolo: ".concat(send.getProtocoloInfo().getNumeroProtocolo()));
 
                     contingencyRepository.delete(f);
-                    FileHelper.saveFilesAndSendToEmailAttach(send, xml, "-nfce");
+                    FileHelper.saveFilesAndSendToEmailAttach(send, xml);
                     saveDocInDatabase(send, xml);
 
                 } catch (Exception e) {
