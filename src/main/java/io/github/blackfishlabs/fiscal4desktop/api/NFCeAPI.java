@@ -7,8 +7,6 @@ import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties
 import io.github.blackfishlabs.fiscal4desktop.controller.NFCeController;
 import io.github.blackfishlabs.fiscal4desktop.controller.StatusWebServiceController;
 import io.github.blackfishlabs.fiscal4desktop.controller.dto.*;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,16 +54,10 @@ public class NFCeAPI {
             status.setUf(FiscalProperties.getInstance().getUF());
             status.setModel(DFModelo.NFCE.getCodigo());
 
-            if (!statusController.getStatusWebServiceCode(status)) {
-                LOGGER.info("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ. Entrada em contingência.");
+            if (statusController.getStatusWebServiceCode(status))
+                return ResponseEntity.status(200).body(nfCeController.send(dto));
 
-                dto.setContingency(true);
-                dto.getFiscalDocumentDTO().getIde().setTpEmis("9");
-                dto.getFiscalDocumentDTO().getIde().setDhCont(new DateTime(DateTimeZone.UTC).toString("yyyy-MM-dd'T'HH:mm:ss"));
-                dto.getFiscalDocumentDTO().getIde().setXJust("Contingência off-line da NFC-e");
-            }
-
-            return ResponseEntity.status(200).body(nfCeController.send(dto));
+            return ResponseEntity.status(500).body("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ.");
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));

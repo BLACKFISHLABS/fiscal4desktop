@@ -18,9 +18,6 @@ import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
 import java.util.Enumeration;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * @author Jeferson Cruz
@@ -30,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 public class FiscalApplication {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(FiscalApplication.class);
-    private static final ScheduledExecutorService scheduler_contingency = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) throws UnknownHostException {
         ConfigurableApplicationContext app = new SpringApplicationBuilder(ApplicationConfiguration.class).headless(false).run(args);
@@ -54,9 +50,6 @@ public class FiscalApplication {
 
         LOGGER.info(">> Workspace: " + FiscalProperties.getInstance().getDirApplication());
         verifyCertificate();
-
-        ContingencyScheduler contingencyScheduler = new ContingencyScheduler();
-        scheduler_contingency.scheduleAtFixedRate(contingencyScheduler::execute, 5, 15, TimeUnit.MINUTES);
     }
 
     private static void lookAndFeel() {
@@ -79,11 +72,11 @@ public class FiscalApplication {
 
             while (eAliases.hasMoreElements()) {
                 String alias = eAliases.nextElement();
-                Certificate certificado = keystore.getCertificate(alias);
+                Certificate c = keystore.getCertificate(alias);
 
                 LOGGER.info(">> Certificado Digital");
                 LOGGER.info("Alias: " + alias);
-                X509Certificate cert = (X509Certificate) certificado;
+                X509Certificate cert = (X509Certificate) c;
 
                 LOGGER.info(cert.getSubjectDN().getName());
                 LOGGER.info("Válido a partir de..: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotBefore()));

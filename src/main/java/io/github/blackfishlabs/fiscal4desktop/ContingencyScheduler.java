@@ -23,6 +23,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+@Deprecated
 class ContingencyScheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ContingencyScheduler.class);
@@ -82,8 +83,8 @@ class ContingencyScheduler {
     private void saveDocInDatabase(NFLoteEnvioRetorno send, String xml) {
         NFCeTranslator nfCeTranslator = new NFCeTranslator();
 
-        NFLoteEnvio loteEnvio = new DFParser().loteParaObjeto(xml);
-        NFNota nota = loteEnvio.getNotas().get(0);
+        NFLoteEnvio l = new DFParser().loteParaObjeto(xml);
+        NFNota nota = l.getNotas().get(0);
 
         new Thread(() -> {
             try {
