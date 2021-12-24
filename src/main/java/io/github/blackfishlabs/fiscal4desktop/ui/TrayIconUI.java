@@ -49,7 +49,6 @@ public class TrayIconUI {
         final MenuItem archivesItem = new MenuItem("ARQUIVOS FISCAIS - ENVIO");
         final MenuItem certificateItem = new MenuItem("CERTIFICADO");
         final MenuItem status = new MenuItem("CONSULTA STATUS - SEFAZ");
-        //final MenuItem queryDFe = new MenuItem("CONSULTA DFE");
         final MenuItem exitItem = new MenuItem("SAIR");
 
         popup.add(developer).setEnabled(false);
@@ -58,7 +57,6 @@ public class TrayIconUI {
         popup.add(archivesItem);
         popup.add(certificateItem);
         popup.add(status);
-        //popup.add(queryDFe);
         popup.addSeparator();
         popup.add(exitItem);
 
@@ -95,27 +93,6 @@ public class TrayIconUI {
                 show(e1.getMessage());
             }
         });
-
-//        queryDFe.addActionListener(e -> {
-//            try {
-//                NFeController gateway = new NFeController();
-//                FiscalQueryDistributionDFeDTO dto = new FiscalQueryDistributionDFeDTO();
-//                dto.setEmitter(FiscalProperties.getInstance().getCNPJ());
-//                dto.setPassword(FiscalHelper.decodeBase64(FiscalProperties.getInstance().getPassword()));
-//
-//                dto.setUf(FiscalProperties.getInstance().getUF());
-//                dto.setKey("");
-//                String number = "";
-//                dto.setNsu("");
-//                dto.setLastNSU(StringUtils.leftPad(number, 15, "0"));
-//                dto.setDocument(FiscalProperties.getInstance().getCNPJ());
-//
-//                showConsole(gateway.queryDFe(dto));
-//            } catch (Exception e1) {
-//                e1.printStackTrace();
-//                show(e1.getMessage());
-//            }
-//        });
 
         certificateItem.addActionListener(e -> {
             try {

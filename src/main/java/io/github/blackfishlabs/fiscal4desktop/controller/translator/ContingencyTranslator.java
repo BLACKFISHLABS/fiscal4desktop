@@ -4,7 +4,6 @@ import io.github.blackfishlabs.fiscal4desktop.domain.model.ContingencyEntity;
 
 import java.util.UUID;
 
-@Deprecated
 public class ContingencyTranslator implements TranslatorForDB<ContingencyEntity, String> {
 
     private String emitter;

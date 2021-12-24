@@ -7,14 +7,13 @@ import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties
 import io.github.blackfishlabs.fiscal4desktop.controller.NFCeController;
 import io.github.blackfishlabs.fiscal4desktop.controller.StatusWebServiceController;
 import io.github.blackfishlabs.fiscal4desktop.controller.dto.*;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/nfce")
@@ -54,10 +53,16 @@ public class NFCeAPI {
             status.setUf(FiscalProperties.getInstance().getUF());
             status.setModel(DFModelo.NFCE.getCodigo());
 
-            if (statusController.getStatusWebServiceCode(status))
-                return ResponseEntity.status(200).body(nfCeController.send(dto));
+            if (!statusController.getStatusWebServiceCode(status)) {
+                LOGGER.info("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ. Entrada em contingência.");
 
-            return ResponseEntity.status(500).body("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ.");
+                dto.setContingency(true);
+                dto.getFiscalDocumentDTO().getIde().setTpEmis("9");
+                dto.getFiscalDocumentDTO().getIde().setDhCont(new DateTime(DateTimeZone.UTC).toString("yyyy-MM-dd'T'HH:mm:ss"));
+                dto.getFiscalDocumentDTO().getIde().setXJust("Contingência off-line da NFC-e");
+            }
+
+            return ResponseEntity.status(200).body(nfCeController.send(dto));
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));
@@ -114,6 +119,17 @@ public class NFCeAPI {
             dto.setModel(DFModelo.NFCE.getCodigo());
 
             return ResponseEntity.status(200).body(nfCeController.disablement(dto));
+        } catch (Exception ex) {
+            LOGGER.error(ex.getMessage());
+            return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));
+        }
+    }
+
+    @GetMapping(value = "/contingency")
+    public ResponseEntity<String> contingency() {
+        try {
+            nfCeController.contingency();
+            return ResponseEntity.status(200).body("Contingência Executada");
         } catch (Exception ex) {
             LOGGER.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));

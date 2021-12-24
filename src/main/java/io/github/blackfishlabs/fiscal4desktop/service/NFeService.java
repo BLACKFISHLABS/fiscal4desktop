@@ -21,7 +21,6 @@ public class NFeService {
         return new WSFacade(configuration).enviaLote(domain);
     }
 
-    @Deprecated
     public String contingency(final NFeConfiguration configuration, NFLoteEnvio domain) throws Exception {
         return new WSFacade(configuration).getLoteAssinado(domain).toString();
     }
