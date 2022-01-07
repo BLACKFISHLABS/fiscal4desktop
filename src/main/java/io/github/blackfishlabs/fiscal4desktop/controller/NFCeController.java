@@ -237,7 +237,7 @@ public class NFCeController {
         }).start();
     }
 
-    public void contingency() {
+    public void contingency() throws InterruptedException {
         LOGGER.info(">> Verificação das notas em contingência iniciada");
 
         List<ContingencyEntity> filter = contingencyRepository.findAll();
@@ -249,7 +249,8 @@ public class NFCeController {
             LOGGER.info(">> Foram encontradas " + filter.size() + " notas em contingência.");
         }
 
-        filter.forEach(f -> {
+        for (ContingencyEntity f : filter) {
+            Thread.sleep(1000);
             StatusWebServiceController statusController = new StatusWebServiceController();
             FiscalStatusWebServiceDTO status = new FiscalStatusWebServiceDTO();
             status.setEmitter(f.getEmitter());
@@ -265,7 +266,9 @@ public class NFCeController {
                     LOGGER.info("Enviando " + xml);
                     NFLoteEnvioRetorno send = service.send(new NFeConfiguration(f.getEmitter(), f.getKey()), xml);
 
-                    if (send.getStatus().equals("539"))
+                    // 539 - Duplicidade OU
+                    // 291 - Certificado Assinatura Data Validade
+                    if (send.getStatus().equals("539") || send.getStatus().equals("291"))
                         contingencyRepository.delete(f);
 
                     checkArgument(send.getStatus().equals("104"),
@@ -273,18 +276,17 @@ public class NFCeController {
                                     concat(send.getMotivo()));
 
                     LOGGER.info("Nota autorizada pelo protocolo: ".concat(send.getProtocoloInfo().getNumeroProtocolo()));
-
                     contingencyRepository.delete(f);
+
                     FileHelper.saveFilesAndSendToEmailAttach(send, xml);
                     saveDocInDatabase(send, xml);
-
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage());
                 }
             } else {
                 LOGGER.info("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ. Entrada em contingência.");
             }
-        });
+        }
     }
 
 }

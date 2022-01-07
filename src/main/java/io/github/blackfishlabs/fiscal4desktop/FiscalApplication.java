@@ -66,7 +66,7 @@ public class FiscalApplication {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        }, 1, 5, TimeUnit.MINUTES);
+        }, 1, 3, TimeUnit.HOURS);
     }
 
     private static void sendGET() throws IOException {
