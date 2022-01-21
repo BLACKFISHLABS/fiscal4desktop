@@ -1,4 +1,4 @@
-package io.github.blackfishlabs.fiscal4desktop.fiscal4desktop;
+package io.github.blackfishlabs.fiscal4desktop;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -237,16 +238,32 @@ public class NFCeController {
         }).start();
     }
 
-    public void contingency() throws InterruptedException {
+    public void contingency() throws InterruptedException, IOException {
         LOGGER.info(">> Verificação das notas em contingência iniciada");
+
+        String historicPath = FiscalProperties.getInstance().getDirApplication().trim()
+                .concat(FiscalConstantHelper.NFCE_PATH_CONTINGENCY_HISTORIC)
+                .concat(DateHelper.toDirFormat(new Date()))
+                .concat("/")
+                .concat(DateHelper.toFileFormat(new Date()))
+                .concat(".txt");
 
         List<ContingencyEntity> filter = contingencyRepository.findAll();
         LOGGER.info(filter.toString());
         if (filter.isEmpty()) {
             LOGGER.info(">> Nenhuma nota em contingencia foi encontrada!");
+
+            List<String> lines = FileHelper.readTextFile(historicPath);
+            lines.add("0||Nenhuma nota em contingencia foi encontrada!");
+            FileHelper.writeTextFile(lines, historicPath);
+
             return;
         } else {
             LOGGER.info(">> Foram encontradas " + filter.size() + " notas em contingência.");
+
+            List<String> lines = FileHelper.readTextFile(historicPath);
+            lines.add(filter.size() + "||Notas em contingência");
+            FileHelper.writeTextFile(lines, historicPath);
         }
 
         for (ContingencyEntity f : filter) {
@@ -268,9 +285,26 @@ public class NFCeController {
 
                     // 539 - Duplicidade OU
                     // 291 - Certificado Assinatura Data Validade
-                    if (send.getStatus().equals("539") || send.getStatus().equals("291"))
+                    if (send.getStatus().equals("539")) {
                         contingencyRepository.delete(f);
 
+                        List<String> lines = FileHelper.readTextFile(historicPath);
+                        lines.add("ERRO|" + send.getProtocoloInfo().getChave() + "|Duplicidade");
+                        FileHelper.writeTextFile(lines, historicPath);
+                    } else if (send.getStatus().equals("291")) {
+                        contingencyRepository.delete(f);
+
+                        List<String> lines = FileHelper.readTextFile(historicPath);
+                        lines.add("ERRO|" + send.getProtocoloInfo().getChave() + "|Certificado Assinatura Data Validade");
+                        FileHelper.writeTextFile(lines, historicPath);
+                    } else if (!send.getStatus().equals("104")) {
+                        // STATUS DE ERROS NÃO TRATADOS
+                        List<String> lines = FileHelper.readTextFile(historicPath);
+                        lines.add("ERRO|" + send.getProtocoloInfo().getChave() + "|" + send.getStatus().concat(" - ").concat(send.getMotivo()));
+                        FileHelper.writeTextFile(lines, historicPath);
+                    }
+
+                    // TRANSMISSÃO BEM SUCEDIDA
                     checkArgument(send.getStatus().equals("104"),
                             send.getStatus().concat(" - ").
                                     concat(send.getMotivo()));
@@ -280,11 +314,23 @@ public class NFCeController {
 
                     FileHelper.saveFilesAndSendToEmailAttach(send, xml);
                     saveDocInDatabase(send, xml);
+
+                    List<String> lines = FileHelper.readTextFile(historicPath);
+                    lines.add("OK|" + send.getProtocoloInfo().getChave() + "|Nota Autorizada");
+                    FileHelper.writeTextFile(lines, historicPath);
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage());
+
+                    List<String> lines = FileHelper.readTextFile(historicPath);
+                    lines.add("ERRO||" + e.getMessage());
+                    FileHelper.writeTextFile(lines, historicPath);
                 }
             } else {
-                LOGGER.info("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ. Entrada em contingência.");
+                LOGGER.info("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ.");
+
+                List<String> lines = FileHelper.readTextFile(historicPath);
+                lines.add("ERRO||Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ.");
+                FileHelper.writeTextFile(lines, historicPath);
             }
         }
     }

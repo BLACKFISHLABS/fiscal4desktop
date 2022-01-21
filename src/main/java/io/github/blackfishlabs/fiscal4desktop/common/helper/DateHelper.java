@@ -18,6 +18,12 @@ public class DateHelper {
         return date == null ? "" : sdf.format(date);
     }
 
+    public static String toFileFormat(final Date date) {
+        Locale locale = Locale.getDefault();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd", locale);
+        return date == null ? "" : sdf.format(date);
+    }
+
     public static DateTime toDateTime(LocalDate localDate) {
         return new DateTime(DateTimeZone.UTC).withDate(
                 localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth()

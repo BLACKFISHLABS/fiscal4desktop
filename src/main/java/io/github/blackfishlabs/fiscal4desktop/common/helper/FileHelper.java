@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
@@ -234,5 +235,19 @@ public class FileHelper {
                 .concat(processed.getMdfe().getInfo().getIdentificacao().getNumero().toString())
                 .concat(".pdf");
         exportPDF(pdf, pdfPath);
+    }
+
+    public static List<String> readTextFile(String fileName) throws IOException {
+        Path path = Paths.get(fileName);
+        Files.createDirectories(path.getParent());
+        if (!Files.exists(path))
+            Files.createFile(path);
+
+        return Files.readAllLines(path, StandardCharsets.UTF_8);
+    }
+
+    public static void writeTextFile(List<String> lines, String fileName) throws IOException {
+        Path path = Paths.get(fileName);
+        Files.write(path, lines, StandardCharsets.UTF_8);
     }
 }
