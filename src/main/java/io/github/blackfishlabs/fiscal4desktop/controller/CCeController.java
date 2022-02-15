@@ -32,11 +32,26 @@ public class CCeController {
     public String sendCCe(FiscalEventCCeDTO dto) throws Exception {
         CCeService service = new CCeService();
         NFeService nFeService = new NFeService();
-
         FiscalCCeTranslator translator = new FiscalCCeTranslator();
 
-        NFEnviaEventoRetorno cce = service.sendCCe(translator.fromDTO(dto));
+        LOGGER.info(String.format("Chave da Nota %s >> buscando da sefaz...", dto.getKey()));
+        FiscalStatusDocumentTranslator statusDocumentTranslator = new FiscalStatusDocumentTranslator();
+        FiscalStatusDocumentDTO statusDocumentDTO = new FiscalStatusDocumentDTO();
+        statusDocumentDTO.setEmitter(dto.getEmitter());
+        statusDocumentDTO.setPassword(dto.getPassword());
+        statusDocumentDTO.setKey(dto.getKey());
 
+        NFNotaConsultaRetorno check = nFeService.status(statusDocumentTranslator.fromDTO(statusDocumentDTO));
+        // find last event
+        Optional<NFProtocoloEvento> protocolEventCheck = check.getProtocoloEvento().stream().reduce((first, second) -> second);
+        if (protocolEventCheck.isPresent()) {
+            int sequential = protocolEventCheck.get().getEvento().getInfoEvento().getNumeroSequencialEvento();
+            dto.setSeq(sequential + 1);
+        } else {
+            dto.setSeq(1);
+        }
+
+        NFEnviaEventoRetorno cce = service.sendCCe(translator.fromDTO(dto));
         Optional<NFEventoRetorno> event = cce.getEventoRetorno().stream().findFirst();
 
         if (event.isPresent()) {
@@ -48,17 +63,16 @@ public class CCeController {
             LOGGER.info("Carta de Correção emitida pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
 
             FiscalStatusDocumentTranslator fiscalStatusDocumentTranslator = new FiscalStatusDocumentTranslator();
-
             FiscalStatusDocumentDTO fiscalStatusDocumentDTO = new FiscalStatusDocumentDTO();
             fiscalStatusDocumentDTO.setEmitter(dto.getEmitter());
             fiscalStatusDocumentDTO.setPassword(dto.getPassword());
             fiscalStatusDocumentDTO.setKey(dto.getKey());
 
             NFNotaConsultaRetorno status = nFeService.status(fiscalStatusDocumentTranslator.fromDTO(fiscalStatusDocumentDTO));
-            Optional<NFProtocoloEvento> proc = status.getProtocoloEvento().stream().findFirst();
+            Optional<NFProtocoloEvento> protocolEvent = status.getProtocoloEvento().stream().findFirst();
 
-            if (proc.isPresent()) {
-                final String procEventNFe = proc.get().toString();
+            if (protocolEvent.isPresent()) {
+                final String eventNFe = protocolEvent.get().toString();
 
                 try {
                     String path = FiscalConstantHelper.CCE_PATH;
@@ -69,8 +83,8 @@ public class CCeController {
                             .concat(info.getChave())
                             .concat("-cce.xml");
 
-                    FileHelper.exportXml(procEventNFe, xmlPath);
-                    FileHelper.exportFilesPDFOnly(proc.get());
+                    FileHelper.exportXml(eventNFe, xmlPath);
+                    FileHelper.exportFilesPDFOnly(protocolEvent.get());
                 } catch (Exception e) {
                     LOGGER.error(e.getMessage());
                 }

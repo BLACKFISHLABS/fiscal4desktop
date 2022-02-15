@@ -17,7 +17,7 @@ public class FiscalCCeTranslator implements Translator<FiscalEventCCeDTO, Fiscal
         domain.setConfiguration(new NFeConfiguration(dto.getEmitter(), dto.getPassword()));
         domain.setCorrection(dto.getCorrection());
         domain.setKey(dto.getKey());
-        domain.setSequential(1);
+        domain.setSequential(dto.getSeq());
         return domain;
     }
 

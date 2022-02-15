@@ -9,10 +9,9 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class FiscalEventCCeDTO extends BasicDTO {
-
     private String emitter;
     private String password;
     private String key;
     private String correction;
-
+    private int seq = 1;
 }
