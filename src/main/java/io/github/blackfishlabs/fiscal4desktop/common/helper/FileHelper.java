@@ -216,7 +216,7 @@ public class FileHelper {
                 .concat(FiscalConstantHelper.CCE_PATH)
                 .concat(DateHelper.toDirFormat(new Date()))
                 .concat("/")
-                .concat(cce.getEvento().getInfoEvento().getChave())
+                .concat(cce.getEvento().getInfoEvento().getChave() + "-" + cce.getEvento().getInfoEvento().getNumeroSequencialEvento())
                 .concat(".pdf");
         exportPDF(pdf, pdfPath);
     }

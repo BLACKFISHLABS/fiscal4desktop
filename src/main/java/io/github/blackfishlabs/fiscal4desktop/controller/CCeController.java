@@ -20,9 +20,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkArgument;
+import static java.util.Objects.isNull;
 
 @Service
 public class CCeController {
@@ -42,11 +44,12 @@ public class CCeController {
         statusDocumentDTO.setKey(dto.getKey());
 
         NFNotaConsultaRetorno check = nFeService.status(statusDocumentTranslator.fromDTO(statusDocumentDTO));
-        // find last event
-        Optional<NFProtocoloEvento> protocolEventCheck = check.getProtocoloEvento().stream().reduce((first, second) -> second);
-        if (protocolEventCheck.isPresent()) {
-            int sequential = protocolEventCheck.get().getEvento().getInfoEvento().getNumeroSequencialEvento();
-            dto.setSeq(sequential + 1);
+        if (!isNull(check.getProtocoloEvento())) {
+            Optional<NFProtocoloEvento> protocolEventCheck = check.getProtocoloEvento().stream().reduce((first, second) -> second);
+            if (protocolEventCheck.isPresent()) {
+                int sequential = protocolEventCheck.get().getEvento().getInfoEvento().getNumeroSequencialEvento();
+                dto.setSeq(sequential + 1);
+            }
         } else {
             dto.setSeq(1);
         }
@@ -69,7 +72,7 @@ public class CCeController {
             fiscalStatusDocumentDTO.setKey(dto.getKey());
 
             NFNotaConsultaRetorno status = nFeService.status(fiscalStatusDocumentTranslator.fromDTO(fiscalStatusDocumentDTO));
-            Optional<NFProtocoloEvento> protocolEvent = status.getProtocoloEvento().stream().findFirst();
+            Optional<NFProtocoloEvento> protocolEvent = status.getProtocoloEvento().stream().reduce((first, second) -> second);
 
             if (protocolEvent.isPresent()) {
                 final String eventNFe = protocolEvent.get().toString();
@@ -80,7 +83,7 @@ public class CCeController {
                             .concat(path)
                             .concat(DateHelper.toDirFormat(new Date()))
                             .concat("/")
-                            .concat(info.getChave())
+                            .concat(info.getChave() + "-" + info.getNumeroSequencialEvento())
                             .concat("-cce.xml");
 
                     FileHelper.exportXml(eventNFe, xmlPath);
