@@ -60,7 +60,7 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
         if (nonNull(dto.getEmit()))
             info.setEmitente(getNFNotaInfoEmitente(dto.getEmit()));
         if (nonNull(dto.getPag()))
-            info.setPagamentos(Collections.singletonList(getNFNotaInfoPagamento(dto.getPag())));
+            info.setPagamento(getNFNotaInfoPagamento(dto.getPag()));
         if (nonNull(dto.getIde()))
             info.setIdentificacao(getNFNotaInfoIdentificacao(dto.getIde(), info.getIdentificador()));
         if (nonNull(dto.getInfAdic()))
@@ -468,9 +468,8 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
 
     private static NFNotaInfoPagamento getNFNotaInfoPagamento(PagDTO dto) {
         final NFNotaInfoPagamento pagamento = new NFNotaInfoPagamento();
-
         pagamento.setDetalhamentoFormasPagamento(getNFNotaInfoFormaPagamento(dto));
-
+        pagamento.setValorTroco(BigDecimal.ZERO);
         return pagamento;
     }
 

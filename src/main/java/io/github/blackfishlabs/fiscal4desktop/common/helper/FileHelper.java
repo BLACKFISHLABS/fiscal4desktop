@@ -170,14 +170,14 @@ public class FileHelper {
 
         byte[] pdf;
         NFDanfeReport report = new NFDanfeReport(processed.toString());
-        ArrayList<NFCePagamento> nfCePagamentos = new ArrayList<>();
+        ArrayList<NFCePagamento> payments = new ArrayList<>();
 
         if (DFModelo.NFCE.equals(processed.getNota().getInfo().getIdentificacao().getModelo())) {
-            processed.getNota().getInfo().getPagamentos().forEach(pag -> pag.getDetalhamentoFormasPagamento().forEach(detPag -> {
-                nfCePagamentos.add(new NFCePagamento(detPag.getMeioPagamento().toString(), new BigDecimal(detPag.getValorPagamento())));
-            }));
+            processed.getNota().getInfo().getPagamento().getDetalhamentoFormasPagamento().forEach(detPag -> {
+                payments.add(new NFCePagamento(detPag.getMeioPagamento().toString(), new BigDecimal(detPag.getValorPagamento())));
+            });
 
-            pdf = report.gerarDanfeNFCe("", true, nfCePagamentos.toArray(new NFCePagamento[0]));
+            pdf = report.gerarDanfeNFCe("", true, payments.toArray(new NFCePagamento[0]));
         } else {
             byte[] bytes = Files.readAllBytes(Paths.get(FiscalProperties.getInstance().getDirImg().concat(FiscalConstantHelper.LOGO_NFE)));
             pdf = report.gerarDanfeNFe(bytes);
@@ -194,13 +194,13 @@ public class FileHelper {
     public static void exportFilesPDFOnly(NFNotaProcessada processed) throws Exception {
         byte[] pdf;
         NFDanfeReport report = new NFDanfeReport(processed.toString());
-        ArrayList<NFCePagamento> nfCePagamentos = new ArrayList<>();
+        ArrayList<NFCePagamento> payments = new ArrayList<>();
 
-        processed.getNota().getInfo().getPagamentos().forEach(pag -> pag.getDetalhamentoFormasPagamento().forEach(detPag -> {
-            nfCePagamentos.add(new NFCePagamento(detPag.getMeioPagamento().toString(), new BigDecimal(detPag.getValorPagamento())));
-        }));
+        processed.getNota().getInfo().getPagamento().getDetalhamentoFormasPagamento().forEach(detPag -> {
+            payments.add(new NFCePagamento(detPag.getMeioPagamento().toString(), new BigDecimal(detPag.getValorPagamento())));
+        });
 
-        pdf = report.gerarDanfeNFCe("", true, nfCePagamentos.toArray(new NFCePagamento[0]));
+        pdf = report.gerarDanfeNFCe("", true, payments.toArray(new NFCePagamento[0]));
 
         mountPath(processed.getNota(), FiscalConstantHelper.NFCE_PATH, Lists.newArrayList());
         exportPDF(pdf, pdfPath);
