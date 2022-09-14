@@ -1097,9 +1097,12 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
         produto.setDescricao(dto.getXProd().trim());
 //        produto.setExtipi("999");
         produto.setCodigoEspecificadorSituacaoTributaria(dto.getCEST());
-        if (!isNullOrEmpty(dto.getCBenef()))
+        if (!isNullOrEmpty(dto.getCBenef())) {
             produto.setCodigoBeneficioFiscalUF(dto.getCBenef());
-//        produto.setMedicamentos(Collections.singletonList(getNFNotaInfoItemProdutoMedicamento()));
+        }
+        if (nonNull(dto.getMed())) {
+            produto.setMedicamento(getNFNotaInfoItemProdutoMedicamento(dto.getMed()));
+        }
         produto.setNcm(dto.getNCM());
 //        produto.setNumeroPedidoCliente("NNxQ9nrQ3HCe5Mc");
 //        produto.setNumeroPedidoItemCliente(999999);
@@ -1155,7 +1158,7 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
         return lot;
     }
 
-//    public static NFNotaInfoItemProdutoDeclaracaoImportacao getNFNotaInfoItemProdutoDeclaracaoImportacao() {
+    //    public static NFNotaInfoItemProdutoDeclaracaoImportacao getNFNotaInfoItemProdutoDeclaracaoImportacao() {
 //        final NFNotaInfoItemProdutoDeclaracaoImportacao declaraoImportacao = new NFNotaInfoItemProdutoDeclaracaoImportacao();
 //        declaraoImportacao.setAdicoes(Collections.singletonList(getNFNotaInfoItemProdutoDeclaracaoImportacaoAdicao()));
 //        declaraoImportacao.setCodigoExportador("E9jBqM65b0MiCiRnYil203iNGJOSZs8iU1KGmQsj2N0kw6QMuvhbsQosFGcU");
@@ -1182,15 +1185,13 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
 //        return importacaoAdicao;
 //    }
 //
-//    public static NFNotaInfoItemProdutoMedicamento getNFNotaInfoItemProdutoMedicamento() {
-//        final NFNotaInfoItemProdutoMedicamento medicamento = new NFNotaInfoItemProdutoMedicamento();
-//        medicamento.setDataFabricacao(new LocalDate(2014, 1, 1));
-//        medicamento.setDataValidade(new LocalDate(2015, 1, 1));
-//        medicamento.setLote("yq50jVDZsvQVNuWoS45U");
-//        medicamento.setPrecoMaximoConsumidor(new BigDecimal("999999999999.99"));
-//        medicamento.setQuantidade(new BigDecimal("9999999.999"));
-//        return medicamento;
-//    }
+    public static NFNotaInfoItemProdutoMedicamento getNFNotaInfoItemProdutoMedicamento(MedDTO dto) {
+        final NFNotaInfoItemProdutoMedicamento medicamento = new NFNotaInfoItemProdutoMedicamento();
+        medicamento.setCodigoProdutoAnvisa(dto.getCProdANVISA());
+        medicamento.setPrecoMaximoConsumidor(new BigDecimal(dto.getVPMC()));
+        medicamento.setMotivoIsencao(dto.getXMotivoIsencao());
+        return medicamento;
+    }
 
     @Override
     public String response(NFLoteEnvioRetornoDados result) {
@@ -1218,17 +1219,16 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
     }
 
     public String response(NFNota document) {
-        final StringBuilder sb = new StringBuilder();
 
-        sb.append("Ambiente: ").append(document.getInfo().getIdentificacao().getAmbiente());
-        sb.append("\n");
-        sb.append("UF: ").append(document.getInfo().getIdentificacao().getUf());
-        sb.append("\n");
-        sb.append("Status: ").append("Contingência off-line da NFC-e");
-        sb.append("\n");
-        sb.append("QrCode: ").append(document.getInfoSuplementar().getQrCode());
-        sb.append("#####");
+        String sb = "Ambiente: " + document.getInfo().getIdentificacao().getAmbiente() +
+                "\n" +
+                "UF: " + document.getInfo().getIdentificacao().getUf() +
+                "\n" +
+                "Status: " + "Contingência off-line da NFC-e" +
+                "\n" +
+                "QrCode: " + document.getInfoSuplementar().getQrCode() +
+                "#####";
 
-        return sb.toString();
+        return sb;
     }
 }

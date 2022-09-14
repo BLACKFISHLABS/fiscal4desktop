@@ -16,7 +16,7 @@ public final class FiscalProperties implements IPath, IParam {
 
     public static FiscalProperties instance;
 
-    private Properties prop;
+    private final Properties prop;
 
     public FiscalProperties() {
         prop = new Properties();

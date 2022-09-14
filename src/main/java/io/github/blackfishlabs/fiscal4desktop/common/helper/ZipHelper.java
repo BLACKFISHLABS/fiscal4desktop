@@ -12,8 +12,8 @@ import java.util.zip.ZipOutputStream;
 
 public class ZipHelper {
 
-    private List<String> fileList = Lists.newArrayList();
-    private String sourceFolder;
+    private final List<String> fileList = Lists.newArrayList();
+    private final String sourceFolder;
 
     public ZipHelper(String sourceFolder) {
         this.sourceFolder = sourceFolder;
@@ -77,6 +77,6 @@ public class ZipHelper {
     }
 
     private String generateZipEntry(String file) {
-        return file.substring(sourceFolder.length() + 1, file.length());
+        return file.substring(sourceFolder.length() + 1);
     }
 }

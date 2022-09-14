@@ -25,20 +25,19 @@ public class FiscalMDFeClosingTranslator implements Translator<FiscalMDFeClosing
 
     @Override
     public String response(MDFeRetorno result) {
-        final StringBuilder sb = new StringBuilder();
 
-        sb.append("Ambiente: ").append(result.getEventoRetorno().getAmbiente());
-        sb.append("\n");
-        sb.append("Tipo do Evento: ").append(result.getEventoRetorno().getTipoEvento());
-        sb.append("\n");
-        sb.append("Data do Registro: ").append(result.getEventoRetorno().getDataHoraRegistro());
-        sb.append("\n");
-        sb.append("Status: ").append(result.getEventoRetorno().getCodigoStatus()).append(" - ").append(result.getEventoRetorno().getMotivo());
-        sb.append("\n");
-        sb.append("Protocolo: ").append(result.getEventoRetorno().getNumeroProtocolo());
-        sb.append("\n");
-        sb.append("Chave de Acesso: ").append(result.getEventoRetorno().getChave());
+        String sb = "Ambiente: " + result.getEventoRetorno().getAmbiente() +
+                "\n" +
+                "Tipo do Evento: " + result.getEventoRetorno().getTipoEvento() +
+                "\n" +
+                "Data do Registro: " + result.getEventoRetorno().getDataHoraRegistro() +
+                "\n" +
+                "Status: " + result.getEventoRetorno().getCodigoStatus() + " - " + result.getEventoRetorno().getMotivo() +
+                "\n" +
+                "Protocolo: " + result.getEventoRetorno().getNumeroProtocolo() +
+                "\n" +
+                "Chave de Acesso: " + result.getEventoRetorno().getChave();
 
-        return sb.toString();
+        return sb;
     }
 }

@@ -6,8 +6,8 @@ import java.util.UUID;
 
 public class ContingencyTranslator implements TranslatorForDB<ContingencyEntity, String> {
 
-    private String emitter;
-    private String key;
+    private final String emitter;
+    private final String key;
 
     public ContingencyTranslator(String emitter, String key) {
         this.emitter = emitter;
