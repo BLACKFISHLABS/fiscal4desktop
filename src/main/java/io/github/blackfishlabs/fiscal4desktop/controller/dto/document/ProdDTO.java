@@ -29,6 +29,9 @@ public class ProdDTO extends BasicDTO {
     @JsonProperty("cBenef")
     private String cBenef;
 
+    @JsonProperty("rastro")
+    private RastroDTO rastro;
+
     @JsonProperty("med")
     private MedDTO med;
 

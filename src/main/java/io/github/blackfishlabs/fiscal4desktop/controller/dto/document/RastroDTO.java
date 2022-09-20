@@ -9,14 +9,17 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-public class MedDTO extends BasicDTO {
+public class RastroDTO extends BasicDTO {
 
-    @JsonProperty("cProdANVISA")
-    private String cProdANVISA;
+    @JsonProperty("nLote")
+    private String nLote;
 
-    @JsonProperty("xMotivoIsencao")
-    private String xMotivoIsencao;
+    @JsonProperty("qLote")
+    private String qLote;
 
-    @JsonProperty("vPMC")
-    private String vPMC;
+    @JsonProperty("dFab")
+    private String dFab;
+
+    @JsonProperty("dVal")
+    private String dVal;
 }

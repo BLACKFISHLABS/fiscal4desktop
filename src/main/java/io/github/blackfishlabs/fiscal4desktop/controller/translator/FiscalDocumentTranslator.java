@@ -1100,6 +1100,9 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
         if (!isNullOrEmpty(dto.getCBenef())) {
             produto.setCodigoBeneficioFiscalUF(dto.getCBenef());
         }
+        if (nonNull(dto.getRastro())) {
+            produto.setRastros(Collections.singletonList(getNFNotaInfoItemProdutoRastro(dto.getRastro())));
+        }
         if (nonNull(dto.getMed())) {
             produto.setMedicamento(getNFNotaInfoItemProdutoMedicamento(dto.getMed()));
         }
@@ -1188,9 +1191,20 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
     public static NFNotaInfoItemProdutoMedicamento getNFNotaInfoItemProdutoMedicamento(MedDTO dto) {
         final NFNotaInfoItemProdutoMedicamento medicamento = new NFNotaInfoItemProdutoMedicamento();
         medicamento.setCodigoProdutoAnvisa(dto.getCProdANVISA());
-        medicamento.setPrecoMaximoConsumidor(new BigDecimal(dto.getVPMC()));
         medicamento.setMotivoIsencao(dto.getXMotivoIsencao());
+        medicamento.setPrecoMaximoConsumidor(new BigDecimal(dto.getVPMC()));
+
         return medicamento;
+    }
+
+    public static NFNotaInfoItemProdutoRastreabilidade getNFNotaInfoItemProdutoRastro(RastroDTO dto) {
+        final NFNotaInfoItemProdutoRastreabilidade rastro = new NFNotaInfoItemProdutoRastreabilidade();
+        rastro.setNumeroLote(dto.getNLote());
+        rastro.setQuantidadeLote(new BigDecimal(dto.getNLote()));
+        rastro.setDataFabricacao(DateHelper.toLocalDate(DateTime.parse(dto.getDFab())));
+        rastro.setDataValidade(DateHelper.toLocalDate(DateTime.parse(dto.getDVal())));
+
+        return rastro;
     }
 
     @Override
@@ -1219,8 +1233,7 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
     }
 
     public String response(NFNota document) {
-
-        String sb = "Ambiente: " + document.getInfo().getIdentificacao().getAmbiente() +
+        return "Ambiente: " + document.getInfo().getIdentificacao().getAmbiente() +
                 "\n" +
                 "UF: " + document.getInfo().getIdentificacao().getUf() +
                 "\n" +
@@ -1228,7 +1241,5 @@ public class FiscalDocumentTranslator implements Translator<FiscalDocumentDTO, N
                 "\n" +
                 "QrCode: " + document.getInfoSuplementar().getQrCode() +
                 "#####";
-
-        return sb;
     }
 }
