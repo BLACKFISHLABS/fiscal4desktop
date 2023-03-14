@@ -11,13 +11,14 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 import javax.swing.*;
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -105,7 +106,7 @@ public class FiscalApplication {
             String password = FiscalHelper.decodeBase64(FiscalProperties.getInstance().getPassword());
 
             KeyStore keystore = KeyStore.getInstance(("PKCS12"));
-            keystore.load(new FileInputStream(path), password.toCharArray());
+            keystore.load(Files.newInputStream(Paths.get(path)), password.toCharArray());
 
             Enumeration<String> eAliases = keystore.aliases();
 
@@ -117,7 +118,7 @@ public class FiscalApplication {
                 LOGGER.info("Alias: " + alias);
                 X509Certificate cert = (X509Certificate) c;
 
-                LOGGER.info(cert.getSubjectDN().getName());
+                LOGGER.info(cert.getSigAlgName());
                 LOGGER.info("Válido a partir de..: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotBefore()));
                 LOGGER.info("Válido até..........: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotAfter()));
             }
