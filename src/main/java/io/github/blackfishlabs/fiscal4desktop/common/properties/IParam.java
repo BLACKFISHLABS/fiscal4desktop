@@ -1,7 +1,6 @@
 package io.github.blackfishlabs.fiscal4desktop.common.properties;
 
 public interface IParam {
-
     String getUF();
 
     String getProduction();

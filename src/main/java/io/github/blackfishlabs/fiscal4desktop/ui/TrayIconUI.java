@@ -14,16 +14,16 @@ import org.slf4j.LoggerFactory;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
+import java.util.*;
 import java.util.List;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
@@ -31,7 +31,6 @@ import static com.google.common.base.Strings.isNullOrEmpty;
 public class TrayIconUI {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TrayIconUI.class);
-    private static final String LOGO_PNG = "logo_min.png";
     private static final String BLACKFISH_LABS = "BLACKFISH LABS";
 
     public static void createAndShowGUI() {
@@ -41,7 +40,7 @@ public class TrayIconUI {
         }
 
         final PopupMenu popup = new PopupMenu();
-        final TrayIcon trayIcon = new TrayIcon(createImage(FiscalProperties.getInstance().getDirImg().concat(LOGO_PNG)));
+        final TrayIcon trayIcon = new TrayIcon(createImage());
         final SystemTray tray = SystemTray.getSystemTray();
 
         final MenuItem developer = new MenuItem(BLACKFISH_LABS);
@@ -100,7 +99,7 @@ public class TrayIconUI {
                 String password = FiscalHelper.decodeBase64(FiscalProperties.getInstance().getPassword());
 
                 KeyStore keystore = KeyStore.getInstance(("PKCS12"));
-                keystore.load(new FileInputStream(path), password.toCharArray());
+                keystore.load(Files.newInputStream(Paths.get(path)), password.toCharArray());
 
                 Enumeration<String> eAliases = keystore.aliases();
 
@@ -115,7 +114,7 @@ public class TrayIconUI {
                             "\n" +
                             "Alias: " + alias +
                             "\n" +
-                            cert.getSubjectDN().getName() +
+                            cert.getSubjectX500Principal().getName() +
                             "\n" +
                             "Válido a partir de..: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotBefore()) +
                             "\n" +
@@ -237,14 +236,13 @@ public class TrayIconUI {
         JOptionPane.showMessageDialog(null, message, BLACKFISH_LABS, JOptionPane.INFORMATION_MESSAGE);
     }
 
-    private static Image createImage(final String path) {
-        final File file = new File(path);
-        Image img = null;
+    private static Image createImage() {
+        byte[] image = Base64.getDecoder().decode("iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAZdEVYdFNvZnR3YXJlAHBhaW50Lm5ldCA0LjAuMTJDBGvsAAAA2klEQVQ4T62SQRJDMBSGezAUN8CCGSdwADewMGNhqS0rt3ADx+onL6JB2+lMv9Wf5H3JS7i4P/InwfO8q4Ig6IWj4DjONE3zPD9W7opxHKVgESjS+yiapun7XpYNwzBIWIS6rl83q6qKHEXRTdF1HTWWwGyapm3bBkHAkEMQ1OrGXsiyrCzLMAwZcleEOI4pAmlvL8hAEIEgVwLyd4ETuA9BVvfC8uYrvu/LCUVR4CRJQraEPM+pMMgrMU8z+KrMFo7w7aQfg/XhTpH2DHr2g/COE4E/RacjrvsECVP7a7cfuQ8AAAAASUVORK5CYII=");
+        ByteArrayInputStream bis = new ByteArrayInputStream(image);
         try {
-            img = ImageIO.read(file);
+            return ImageIO.read(bis);
         } catch (IOException e) {
-            show("try create TrayIcon with null Image");
+            throw new RuntimeException(e);
         }
-        return img;
     }
 }

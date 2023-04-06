@@ -12,6 +12,8 @@ import br.indie.fiscal4j.nfe400.classes.nota.NFNotaProcessada;
 
 import java.io.FileInputStream;
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateExpiredException;
@@ -169,7 +171,7 @@ public class FiscalHelper {
     public static void validateCertificateBeforeUse(String path, String password) throws Exception {
         KeyStore keyStore = KeyStore.getInstance("PKCS12");
 
-        keyStore.load(new FileInputStream(path), password.toCharArray());
+        keyStore.load(Files.newInputStream(Paths.get(path)), password.toCharArray());
         Enumeration<String> eAliases = keyStore.aliases();
 
         while (eAliases.hasMoreElements()) {

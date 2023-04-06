@@ -1,10 +1,10 @@
 package io.github.blackfishlabs.fiscal4desktop.domain.model;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -20,16 +20,16 @@ public class MDFeEntity implements Serializable {
     @Column(name = "CREATED_DATE")
     private Date createdDate = new DateTime(DateTimeZone.UTC).toDate();
 
-    @Column(name = "EMMITER")
+    @Column(name = "EMITTER")
     private String emitter;
 
-    @Column(name = "KEY")
+    @Column(name = "STRING_KEY")
     private String key;
 
     @Column(name = "PROTOCOL")
     private String protocol;
 
-    @Column(name = "PROTOCOL_CANCEL")
+    @Column(name = "PROTOCOL_CANCELED")
     private String protocolCancel;
 
     @Column(name = "ENVIRONMENT")
@@ -39,10 +39,10 @@ public class MDFeEntity implements Serializable {
     private String uf;
 
     @Lob
-    @Column(name = "MDFE_XML")
+    @Column(name = "STRING_XML")
     private String xml;
 
     @Lob
-    @Column(name = "MDFE_XML_CANCEL")
+    @Column(name = "STRING_XML_CANCELED")
     private String xmlCancel;
 }

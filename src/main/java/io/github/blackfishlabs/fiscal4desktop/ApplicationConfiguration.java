@@ -36,7 +36,7 @@ public class ApplicationConfiguration implements WebMvcConfigurer {
         Contact contact = new Contact().name("Jeferson Cruz").url("http://blackfishlabs.github.io").email("dev.blackfishlabs@gmail.com");
         return new Info()
                 .title("Fiscal Api")
-                .description("Api de integração do Forza com outros sistemas")
+                .description("API DE INTEGRAÇÃO COM OUTROS SISTEMAS")
                 .version("1.0.0")
                 .license(new License().name("Apache 2.0").url("http://www.apache.org/licenses/LICENSE-2.0"))
                 .contact(contact);

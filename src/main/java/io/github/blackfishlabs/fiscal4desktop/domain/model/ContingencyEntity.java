@@ -1,10 +1,10 @@
 package io.github.blackfishlabs.fiscal4desktop.domain.model;
 
+import jakarta.persistence.*;
 import lombok.Data;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -21,12 +21,12 @@ public class ContingencyEntity implements Serializable {
     private Date createdDate = new DateTime(DateTimeZone.UTC).toDate();
 
     @Lob
-    @Column(name = "NFCE_XML")
+    @Column(name = "STRING_XML")
     private String xml;
 
-    @Column(name = "EMMITER")
+    @Column(name = "EMITTER")
     private String emitter;
 
-    @Column(name = "KEY")
+    @Column(name = "STRING_KEY")
     private String key;
 }

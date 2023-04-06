@@ -118,7 +118,7 @@ public class FiscalApplication {
                 LOGGER.info("Alias: " + alias);
                 X509Certificate cert = (X509Certificate) c;
 
-                LOGGER.info(cert.getSigAlgName());
+                LOGGER.info(cert.getSubjectX500Principal().getName());
                 LOGGER.info("Válido a partir de..: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotBefore()));
                 LOGGER.info("Válido até..........: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotAfter()));
             }

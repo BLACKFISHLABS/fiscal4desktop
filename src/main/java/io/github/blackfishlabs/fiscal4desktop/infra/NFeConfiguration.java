@@ -8,6 +8,8 @@ import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -47,7 +49,7 @@ public class NFeConfiguration extends NFeConfig {
     public KeyStore getCertificadoKeyStore() throws KeyStoreException {
         if (this.keyStoreCertificado == null) {
             this.keyStoreCertificado = KeyStore.getInstance("PKCS12");
-            try (InputStream certificadoStream = new FileInputStream(FiscalProperties.getInstance().getDirCertificate().concat(this.certificate).concat(".pfx"))) {
+            try (InputStream certificadoStream = Files.newInputStream(Paths.get(FiscalProperties.getInstance().getDirCertificate().concat(this.certificate).concat(".pfx")))) {
                 this.keyStoreCertificado.load(certificadoStream, this.getCertificadoSenha().toCharArray());
             } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
                 this.keyStoreCadeia = null;
@@ -66,7 +68,7 @@ public class NFeConfiguration extends NFeConfig {
     public KeyStore getCadeiaCertificadosKeyStore() throws KeyStoreException {
         if (this.keyStoreCadeia == null) {
             this.keyStoreCadeia = KeyStore.getInstance("JKS");
-            try (InputStream cadeia = new FileInputStream(FiscalProperties.getInstance().getDirCertificate().concat(CADEIA_JKS))) {
+            try (InputStream cadeia = Files.newInputStream(Paths.get(FiscalProperties.getInstance().getDirCertificate().concat(CADEIA_JKS)))) {
                 this.keyStoreCadeia.load(cadeia, this.getCadeiaCertificadosSenha().toCharArray());
             } catch (CertificateException | NoSuchAlgorithmException | IOException e) {
                 this.keyStoreCadeia = null;
