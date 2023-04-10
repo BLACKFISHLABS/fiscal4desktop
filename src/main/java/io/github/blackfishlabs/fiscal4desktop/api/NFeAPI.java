@@ -7,8 +7,7 @@ import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties
 import io.github.blackfishlabs.fiscal4desktop.controller.NFeController;
 import io.github.blackfishlabs.fiscal4desktop.controller.StatusWebServiceController;
 import io.github.blackfishlabs.fiscal4desktop.controller.dto.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Slf4j
 @RestController
 @RequestMapping("/nfe")
 public class NFeAPI {
@@ -23,14 +23,12 @@ public class NFeAPI {
     @Autowired
     private NFeController nFeController;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NFeAPI.class);
-
     @PostMapping(value = "/emitir", produces = "text/plain;charset=UTF-8", consumes = "application/x-www-form-urlencoded")
     public ResponseEntity<String> sendNFe(@RequestParam("nfe") String nfe,
                                           @RequestParam("emitente") String emitter,
                                           @RequestParam("senha") String password) {
         try {
-            LOGGER.info("Call sendNFe() method");
+            log.info("Call sendNFe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -40,7 +38,7 @@ public class NFeAPI {
             dto.setPassword(password);
 
             String json = FiscalHelper.validationData(nfe);
-            LOGGER.info("JSON para envio: " + json);
+            log.info("JSON para envio: " + json);
 
             ObjectMapper mapper = new ObjectMapper();
             FiscalDocumentDTO fiscalDocumentDTO = mapper.readValue(json, FiscalDocumentDTO.class);
@@ -58,7 +56,7 @@ public class NFeAPI {
 
             return ResponseEntity.status(500).body("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ.");
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));
         }
     }
@@ -69,7 +67,7 @@ public class NFeAPI {
                                             @RequestParam("chave") String key,
                                             @RequestParam("justificativa") String justification) {
         try {
-            LOGGER.info("Call cancelNFe() method");
+            log.info("Call cancelNFe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -82,7 +80,7 @@ public class NFeAPI {
 
             return ResponseEntity.status(200).body(nFeController.cancel(dto));
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));
         }
     }
@@ -96,7 +94,7 @@ public class NFeAPI {
                                                  @RequestParam("final") String finalNumber,
                                                  @RequestParam("justificativa") String justification) {
         try {
-            LOGGER.info("Call disablementNFe() method");
+            log.info("Call disablementNFe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -113,7 +111,7 @@ public class NFeAPI {
 
             return ResponseEntity.status(200).body(nFeController.disablement(dto));
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));
         }
     }
@@ -124,7 +122,7 @@ public class NFeAPI {
                                          @RequestParam("senha") String password) {
 
         try {
-            LOGGER.info("Call status() method");
+            log.info("Call status() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -136,7 +134,7 @@ public class NFeAPI {
 
             return ResponseEntity.status(200).body(nFeController.status(dto));
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));
         }
     }

@@ -8,8 +8,7 @@ import io.github.blackfishlabs.fiscal4desktop.common.helper.ZipHelper;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
 import io.github.blackfishlabs.fiscal4desktop.controller.StatusWebServiceController;
 import io.github.blackfishlabs.fiscal4desktop.controller.dto.FiscalStatusWebServiceDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -23,14 +22,13 @@ import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.text.SimpleDateFormat;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
+@Slf4j
 public class TrayIconUI {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(TrayIconUI.class);
     private static final String BLACKFISH_LABS = "BLACKFISH LABS";
 
     public static void createAndShowGUI() {
@@ -123,7 +121,7 @@ public class TrayIconUI {
                 }
 
             } catch (Exception e2) {
-                LOGGER.error(e2.getMessage());
+                log.error(e2.getMessage());
                 show(e2.getMessage());
             }
         });
@@ -205,7 +203,7 @@ public class TrayIconUI {
 
                     outputPath.concat(FiscalConstantHelper.CCE_ZIP));
 
-            LOGGER.info(EmailHelper.sendDocumentByEmailXML(files,
+            log.info(EmailHelper.sendDocumentByEmailXML(files,
                     "Envio de XML",
                     FiscalProperties.getInstance().getCNPJ(),
                     FiscalProperties.getInstance().getCNPJ(),
@@ -215,9 +213,9 @@ public class TrayIconUI {
                 try {
                     File file = new File(f);
                     if (file.delete())
-                        LOGGER.info(file.getName() + " is deleted!");
+                        log.info(file.getName() + " is deleted!");
                     else
-                        LOGGER.info("Delete operation is failed.");
+                        log.info("Delete operation is failed.");
                 } catch (Exception e2) {
                     e2.printStackTrace();
                 }

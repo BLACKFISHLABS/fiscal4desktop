@@ -5,7 +5,6 @@ import br.indie.fiscal4j.DFUnidadeFederativa;
 import br.indie.fiscal4j.nfe.NFeConfig;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;

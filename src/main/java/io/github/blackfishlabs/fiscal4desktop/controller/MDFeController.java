@@ -25,8 +25,7 @@ import io.github.blackfishlabs.fiscal4desktop.domain.model.MDFeEntity;
 import io.github.blackfishlabs.fiscal4desktop.domain.repository.MDFeRepository;
 import io.github.blackfishlabs.fiscal4desktop.infra.MDFeConfiguration;
 import io.github.blackfishlabs.fiscal4desktop.service.MDFeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -37,10 +36,9 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 
+@Slf4j
 @Service
 public class MDFeController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(MDFeController.class);
 
     @Autowired
     private MDFeRepository mdFeRepository;
@@ -64,7 +62,7 @@ public class MDFeController {
                 send.getRetorno().getStatus().concat(" - ").
                         concat(send.getRetorno().getMotivo()));
 
-        LOGGER.info("Manifesto recebido pelo recibo: ".concat(send.getRetorno().getInfoRecebimento().getNumeroRecibo()));
+        log.info("Manifesto recebido pelo recibo: ".concat(send.getRetorno().getInfoRecebimento().getNumeroRecibo()));
 
         sendDTO.setKey(send.getRetorno().getInfoRecebimento().getNumeroRecibo());
         FiscalMDFeStatusTranslator fiscalMDFeStatusTranslator = new FiscalMDFeStatusTranslator();
@@ -72,7 +70,7 @@ public class MDFeController {
         // Latency for async search
         Thread.sleep(5000);
         MDFeConsultaReciboRetorno status = service.status(fiscalMDFeStatusTranslator.fromDTO(sendDTO));
-        LOGGER.info("Manifesto Retorno: ".concat(status.toString()));
+        log.info("Manifesto Retorno: ".concat(status.toString()));
 
         if (isNull(status.getMdfProtocolo()))
             throw new RuntimeException(status.getMotivo());
@@ -117,7 +115,7 @@ public class MDFeController {
         checkArgument(closing.getEventoRetorno().getCodigoStatus().equals(135),
                 closing.getEventoRetorno().getCodigoStatus().toString().concat(" - ").
                         concat(closing.getEventoRetorno().getMotivo()));
-        LOGGER.info("Encerramento de manifesto emitida pelo protocolo: ".concat(closing.getEventoRetorno().getNumeroProtocolo()));
+        log.info("Encerramento de manifesto emitida pelo protocolo: ".concat(closing.getEventoRetorno().getNumeroProtocolo()));
 
         return translator.response(closing);
     }
@@ -136,7 +134,7 @@ public class MDFeController {
             checkArgument(cancel.getEventoRetorno().getCodigoStatus().equals(135),
                     cancel.getEventoRetorno().getCodigoStatus().toString().concat(" - ").
                             concat(cancel.getEventoRetorno().getMotivo()));
-            LOGGER.info("Cancelamento de manifesto emitida pelo protocolo: ".concat(cancel.getEventoRetorno().getNumeroProtocolo()));
+            log.info("Cancelamento de manifesto emitida pelo protocolo: ".concat(cancel.getEventoRetorno().getNumeroProtocolo()));
 
             FiscalMDFeStatusDomain domain = new FiscalMDFeStatusDomain();
             domain.setConfiguration(new MDFeConfiguration(dto.getEmitter(), dto.getPassword()));
@@ -161,7 +159,7 @@ public class MDFeController {
 
                     FileHelper.exportXml(procEventNFe, xmlPath);
                 } catch (Exception e) {
-                    LOGGER.error(e.getMessage());
+                    log.error(e.getMessage());
                 }
 
                 mdFeEntity.get().setXmlCancel(procEventNFe);
@@ -179,11 +177,11 @@ public class MDFeController {
 
         new Thread(() -> {
             try {
-                LOGGER.info("Salvando documentos no Banco de Dados");
+                log.info("Salvando documentos no Banco de Dados");
                 mdFeRepository.save(translator.toEntity(result, send));
             } catch (Exception e) {
-                LOGGER.error("Erro ao gravar no banco de dados!");
-                LOGGER.error(e.getMessage());
+                log.error("Erro ao gravar no banco de dados!");
+                log.error(e.getMessage());
             }
         }).start();
     }

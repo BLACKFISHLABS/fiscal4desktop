@@ -1,5 +1,7 @@
 package io.github.blackfishlabs.fiscal4desktop.common.properties;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,6 +11,7 @@ import java.util.Properties;
 
 import static io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalPropertiesConstants.*;
 
+@Slf4j
 public final class FiscalProperties implements IPath, IParam {
 
     private static final String DIR_APP = System.getProperty("user.dir");
@@ -23,8 +26,9 @@ public final class FiscalProperties implements IPath, IParam {
         prop = new Properties();
         try {
             prop.load(Files.newInputStream(Paths.get(FILE_PROPERTIES)));
+            instance = this;
         } catch (IOException e) {
-            e.printStackTrace();
+            log.warn("NO CONFIGURATION FILE FOUND!");
         }
     }
 

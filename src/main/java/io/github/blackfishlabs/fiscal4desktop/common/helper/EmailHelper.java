@@ -9,10 +9,9 @@ import com.sendgrid.helpers.mail.objects.Attachments;
 import com.sendgrid.helpers.mail.objects.Content;
 import com.sendgrid.helpers.mail.objects.Email;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.activation.DataSource;
 import javax.activation.FileDataSource;
@@ -24,9 +23,8 @@ import java.util.regex.Pattern;
 
 import static com.google.common.base.Strings.isNullOrEmpty;
 
+@Slf4j
 public class EmailHelper {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(EmailHelper.class);
 
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX =
             Pattern.compile("^[A-Z0-9._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
@@ -38,12 +36,12 @@ public class EmailHelper {
                                           String messageText,
                                           List<String> attachments) {
         if (isNullOrEmpty(FiscalProperties.getInstance().getEmailCompany())) {
-            LOGGER.warn("Arquivo de Propriedade: Preencher parametro de email da empresa!");
+            log.warn("Arquivo de Propriedade: Preencher parametro de email da empresa!");
             return;
         }
 
         if (isNullOrEmpty(FiscalProperties.getInstance().getEmailKey())) {
-            LOGGER.warn("Arquivo de Propriedade: Preencher parametro de chave do email!");
+            log.warn("Arquivo de Propriedade: Preencher parametro de chave do email!");
             return;
         }
 
@@ -67,7 +65,7 @@ public class EmailHelper {
                         myAttach.setFilename(source.getName());
                         mail.addAttachments(myAttach);
                     } catch (IOException e) {
-                        LOGGER.error(e.getMessage());
+                        log.error(e.getMessage());
                     }
                 }
             }
@@ -85,7 +83,7 @@ public class EmailHelper {
             System.out.println(response.getBody());
             System.out.println(response.getHeaders());
         } catch (IOException ex) {
-            LOGGER.error(ex.getMessage());
+            log.error(ex.getMessage());
         }
     }
 

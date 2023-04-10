@@ -25,8 +25,7 @@ import io.github.blackfishlabs.fiscal4desktop.domain.repository.ContingencyRepos
 import io.github.blackfishlabs.fiscal4desktop.domain.repository.NFCeRepository;
 import io.github.blackfishlabs.fiscal4desktop.infra.NFeConfiguration;
 import io.github.blackfishlabs.fiscal4desktop.service.NFeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,10 +37,9 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
+@Slf4j
 @Service
 public class NFCeController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(NFCeController.class);
 
     @Autowired
     private NFCeRepository nfCeRepository;
@@ -76,7 +74,7 @@ public class NFCeController {
                     send.getRetorno().getStatus().concat(" - ").
                             concat(send.getRetorno().getMotivo()));
 
-            LOGGER.info("Nota autorizada pelo protocolo: ".concat(send.getRetorno().getProtocoloInfo().getNumeroProtocolo()));
+            log.info("Nota autorizada pelo protocolo: ".concat(send.getRetorno().getProtocoloInfo().getNumeroProtocolo()));
 
             FileHelper.saveFilesAndSendToEmailAttach(send);
             saveDocInDatabase(send);
@@ -84,7 +82,7 @@ public class NFCeController {
             return translator.response(send);
         } else {
             String contingency = service.contingency(configuration, nfLoteEnvio);
-            LOGGER.info("Nota assinada em contingência: ".concat(contingency));
+            log.info("Nota assinada em contingência: ".concat(contingency));
 
             saveDocInDatabase(contingency, contingencyTranslator);
 
@@ -108,7 +106,7 @@ public class NFCeController {
         if (nfCeEntity.isPresent()) {
             dto.setProtocol(nfCeEntity.get().getProtocol());
         } else {
-            LOGGER.info(String.format("Nota %s não encontrada no banco de dados local, buscando da sefaz...", dto.getKey()));
+            log.info(String.format("Nota %s não encontrada no banco de dados local, buscando da sefaz...", dto.getKey()));
             FiscalStatusDocumentTranslator fiscalStatusDocumentTranslator = new FiscalStatusDocumentTranslator();
 
             FiscalStatusDocumentDTO fiscalStatusDocumentDTO = new FiscalStatusDocumentDTO();
@@ -122,8 +120,8 @@ public class NFCeController {
             if ("100".equals(status.getStatus())) {
                 dto.setProtocol(status.getProtocolo().getProtocoloInfo().getNumeroProtocolo());
             } else {
-                LOGGER.error(status.getMotivo());
-                LOGGER.info(String.format("Protocolo %s não encontrada no busca da chave", dto.getKey()));
+                log.error(status.getMotivo());
+                log.info(String.format("Protocolo %s não encontrada no busca da chave", dto.getKey()));
             }
         }
 
@@ -137,7 +135,7 @@ public class NFCeController {
                 checkArgument(info.getCodigoStatus().equals(135),
                         info.getCodigoStatus().toString().concat(" - ").
                                 concat(info.getMotivo()));
-                LOGGER.info("Nota cancelada pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
+                log.info("Nota cancelada pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
 
                 FiscalStatusDocumentTranslator fiscalStatusDocumentTranslator = new FiscalStatusDocumentTranslator();
 
@@ -164,7 +162,7 @@ public class NFCeController {
 
                         FileHelper.exportXml(procEventNFe, xmlPath);
                     } catch (Exception e) {
-                        LOGGER.error(e.getMessage());
+                        log.error(e.getMessage());
                     }
 
                     if (nfCeEntity.isPresent()) {
@@ -196,12 +194,12 @@ public class NFCeController {
 
         new Thread(() -> {
             try {
-                LOGGER.info("Salvando documentos no Banco de Dados");
+                log.info("Salvando documentos no Banco de Dados");
                 Optional<NFNota> document = send.getLoteAssinado().getNotas().stream().findFirst();
                 document.ifPresent(d -> nfCeRepository.save(translator.toEntity(send)));
             } catch (Exception e) {
-                LOGGER.error("Erro ao gravar no banco de dados!");
-                LOGGER.error(e.getMessage());
+                log.error("Erro ao gravar no banco de dados!");
+                log.error(e.getMessage());
             }
         }).start();
     }
@@ -209,13 +207,13 @@ public class NFCeController {
     private void saveDocInDatabase(String xml, ContingencyTranslator contingencyTranslator) {
         new Thread(() -> {
             try {
-                LOGGER.info("Salvando documentos no Banco de Dados");
+                log.info("Salvando documentos no Banco de Dados");
                 ContingencyEntity contingencyEntity = contingencyTranslator.toEntity(xml);
                 contingencyRepository.save(contingencyEntity);
-                LOGGER.info(contingencyEntity.toString());
+                log.info(contingencyEntity.toString());
             } catch (Exception e) {
-                LOGGER.error("Erro ao gravar no banco de dados!");
-                LOGGER.error(e.getMessage());
+                log.error("Erro ao gravar no banco de dados!");
+                log.error(e.getMessage());
             }
         }).start();
     }
@@ -228,18 +226,18 @@ public class NFCeController {
 
         new Thread(() -> {
             try {
-                LOGGER.info("Salvando documentos no Banco de Dados");
+                log.info("Salvando documentos no Banco de Dados");
                 nfCeRepository.save(nfCeTranslator.toEntity(nota, send, xml));
 
             } catch (Exception e) {
-                LOGGER.error("Erro ao gravar no banco de dados!");
-                LOGGER.error(e.getMessage());
+                log.error("Erro ao gravar no banco de dados!");
+                log.error(e.getMessage());
             }
         }).start();
     }
 
     public void contingency() throws InterruptedException, IOException {
-        LOGGER.info(">> Verificação das notas em contingência iniciada");
+        log.info(">> Verificação das notas em contingência iniciada");
 
         String historicPath = FiscalProperties.getInstance().getDirApplication().trim()
                 .concat(FiscalConstantHelper.NFCE_PATH_CONTINGENCY_HISTORIC)
@@ -249,9 +247,9 @@ public class NFCeController {
                 .concat(".txt");
 
         List<ContingencyEntity> filter = contingencyRepository.findAll();
-        LOGGER.info(filter.toString());
+        log.info(filter.toString());
         if (filter.isEmpty()) {
-            LOGGER.info(">> Nenhuma nota em contingencia foi encontrada!");
+            log.info(">> Nenhuma nota em contingencia foi encontrada!");
 
             List<String> lines = FileHelper.readTextFile(historicPath);
             lines.add("0||Nenhuma nota em contingencia foi encontrada!");
@@ -259,7 +257,7 @@ public class NFCeController {
 
             return;
         } else {
-            LOGGER.info(">> Foram encontradas " + filter.size() + " notas em contingência.");
+            log.info(">> Foram encontradas " + filter.size() + " notas em contingência.");
 
             List<String> lines = FileHelper.readTextFile(historicPath);
             lines.add(filter.size() + "||Notas em contingência");
@@ -280,7 +278,7 @@ public class NFCeController {
                 try {
                     final String xml = f.getXml();
 
-                    LOGGER.info("Enviando " + xml);
+                    log.info("Enviando " + xml);
                     NFLoteEnvioRetorno send = service.send(new NFeConfiguration(f.getEmitter(), f.getKey()), xml);
 
                     // 539 - Duplicidade OU
@@ -309,7 +307,7 @@ public class NFCeController {
                             send.getStatus().concat(" - ").
                                     concat(send.getMotivo()));
 
-                    LOGGER.info("Nota autorizada pelo protocolo: ".concat(send.getProtocoloInfo().getNumeroProtocolo()));
+                    log.info("Nota autorizada pelo protocolo: ".concat(send.getProtocoloInfo().getNumeroProtocolo()));
                     contingencyRepository.delete(f);
 
                     FileHelper.saveFilesAndSendToEmailAttach(send, xml);
@@ -319,14 +317,14 @@ public class NFCeController {
                     lines.add("OK|" + send.getProtocoloInfo().getChave() + "|Nota Autorizada");
                     FileHelper.writeTextFile(lines, historicPath);
                 } catch (Exception e) {
-                    LOGGER.error(e.getMessage());
+                    log.error(e.getMessage());
 
                     List<String> lines = FileHelper.readTextFile(historicPath);
                     lines.add("ERRO||" + e.getMessage());
                     FileHelper.writeTextFile(lines, historicPath);
                 }
             } else {
-                LOGGER.info("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ.");
+                log.info("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ.");
 
                 List<String> lines = FileHelper.readTextFile(historicPath);
                 lines.add("ERRO||Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ.");

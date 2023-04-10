@@ -3,8 +3,7 @@ package io.github.blackfishlabs.fiscal4desktop;
 import io.github.blackfishlabs.fiscal4desktop.common.helper.FiscalHelper;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
 import io.github.blackfishlabs.fiscal4desktop.ui.TrayIconUI;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -32,10 +31,10 @@ import java.util.concurrent.TimeUnit;
  * @author Jeferson Cruz
  * BLACKFISH LABS
  */
+@Slf4j
 @SpringBootApplication
 public class FiscalApplication {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(FiscalApplication.class);
     private static final ScheduledExecutorService scheduler_contingency = Executors.newScheduledThreadPool(1);
 
     public static void main(String[] args) throws UnknownHostException {
@@ -46,7 +45,7 @@ public class FiscalApplication {
         String hostAddress = InetAddress.getLocalHost().getHostAddress();
         initialize();
 
-        LOGGER.info("\n|------------------------------------------------------------" +
+        log.info("\n|------------------------------------------------------------" +
                 "\n|   Application '" + applicationName + "' is running!         " +
                 "\n|   Access URLs:                                              " +
                 "\n|   Local:      http://127.0.0.1:" + port +
@@ -58,14 +57,14 @@ public class FiscalApplication {
         lookAndFeel();
         SwingUtilities.invokeLater(TrayIconUI::createAndShowGUI);
 
-        LOGGER.info(">> Workspace: " + FiscalProperties.getInstance().getDirApplication());
+        log.info("WORKSPACE: " + FiscalProperties.getInstance().getDirApplication());
         verifyCertificate();
 
         scheduler_contingency.scheduleAtFixedRate(() -> {
             try {
                 sendGET();
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.toString());
             }
         }, 1, 3, TimeUnit.HOURS);
     }
@@ -75,7 +74,7 @@ public class FiscalApplication {
         HttpURLConnection con = (HttpURLConnection) obj.openConnection();
         con.setRequestMethod("GET");
         int responseCode = con.getResponseCode();
-        LOGGER.info("GET Response Code :: " + responseCode);
+        log.info("GET Response Code :: " + responseCode);
         if (responseCode == HttpURLConnection.HTTP_OK) {
             BufferedReader in = new BufferedReader(new InputStreamReader(
                     con.getInputStream()));
@@ -85,9 +84,9 @@ public class FiscalApplication {
                 response.append(inputLine);
             }
             in.close();
-            LOGGER.info(response.toString());
+            log.info(response.toString());
         } else {
-            LOGGER.info("GET request not worked");
+            log.info("GET request not worked");
         }
     }
 
@@ -96,7 +95,7 @@ public class FiscalApplication {
             UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
         } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
                  UnsupportedLookAndFeelException e) {
-            LOGGER.error(">> " + e.getMessage());
+            log.error(">> " + e.getMessage());
         }
     }
 
@@ -114,16 +113,16 @@ public class FiscalApplication {
                 String alias = eAliases.nextElement();
                 Certificate c = keystore.getCertificate(alias);
 
-                LOGGER.info(">> Certificado Digital");
-                LOGGER.info("Alias: " + alias);
+                log.info("CERTIFICADO DIGITAL:");
+                log.info("Alias: " + alias);
                 X509Certificate cert = (X509Certificate) c;
 
-                LOGGER.info(cert.getSubjectX500Principal().getName());
-                LOGGER.info("Válido a partir de..: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotBefore()));
-                LOGGER.info("Válido até..........: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotAfter()));
+                log.info(cert.getSubjectX500Principal().getName());
+                log.info("Válido a partir de..: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotBefore()));
+                log.info("Válido até..........: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(cert.getNotAfter()));
             }
         } catch (Exception e) {
-            LOGGER.error(e.toString());
+            log.warn(e.toString());
         }
     }
 }

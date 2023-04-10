@@ -10,7 +10,6 @@ import br.indie.fiscal4j.nfe400.classes.lote.envio.NFLoteEnvioRetornoDados;
 import br.indie.fiscal4j.nfe400.classes.nota.NFNota;
 import br.indie.fiscal4j.nfe400.classes.nota.NFNotaProcessada;
 
-import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Paths;

@@ -1,6 +1,6 @@
 package io.github.blackfishlabs.fiscal4desktop.domain.model;
 
-import jakarta.persistence.*;
+import javax.persistence.*;
 import lombok.Data;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;

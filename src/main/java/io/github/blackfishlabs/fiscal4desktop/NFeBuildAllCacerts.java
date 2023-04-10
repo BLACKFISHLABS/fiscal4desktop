@@ -2,15 +2,13 @@ package io.github.blackfishlabs.fiscal4desktop;
 
 import br.indie.fiscal4j.utils.DFCadeiaCertificados;
 import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FileUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
+@Slf4j
 public class NFeBuildAllCacerts extends DFCadeiaCertificados {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(NFeBuildAllCacerts.class);
     private final String path;
 
     private NFeBuildAllCacerts(String path) {
@@ -27,7 +25,7 @@ public class NFeBuildAllCacerts extends DFCadeiaCertificados {
             FileUtils.writeByteArrayToFile(
                     new File(buildCacerts.getPath()),
                     geraCadeiaCertificados(buildCacerts.getPassphrase()));
-            LOGGER.info("Certificate sucessfully generated in " + buildCacerts.getPath());
+            log.info("Certificate sucessfully generated in " + buildCacerts.getPath());
         } catch (final Exception e) {
             e.printStackTrace();
         }

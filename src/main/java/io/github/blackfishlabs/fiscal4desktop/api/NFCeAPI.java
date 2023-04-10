@@ -7,14 +7,14 @@ import io.github.blackfishlabs.fiscal4desktop.common.properties.FiscalProperties
 import io.github.blackfishlabs.fiscal4desktop.controller.NFCeController;
 import io.github.blackfishlabs.fiscal4desktop.controller.StatusWebServiceController;
 import io.github.blackfishlabs.fiscal4desktop.controller.dto.*;
+import lombok.extern.slf4j.Slf4j;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/nfce")
 public class NFCeAPI {
@@ -22,15 +22,13 @@ public class NFCeAPI {
     @Autowired
     private NFCeController nfCeController;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(NFCeAPI.class);
-
     @PostMapping(value = "/emitir", produces = "text/plain;charset=UTF-8", consumes = "application/x-www-form-urlencoded")
     public ResponseEntity<String> sendNFCe(@RequestParam("nfce") String nfce,
                                            @RequestParam("emitente") String emitter,
                                            @RequestParam("senha") String password) {
 
         try {
-            LOGGER.info("Call sendNFCe() method");
+            log.info("Call sendNFCe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -40,7 +38,7 @@ public class NFCeAPI {
             dto.setPassword(password);
 
             String json = FiscalHelper.validationData(nfce);
-            LOGGER.info("JSON para envio: " + json);
+            log.info("JSON para envio: " + json);
 
             ObjectMapper mapper = new ObjectMapper();
             FiscalDocumentDTO fiscalDocumentDTO = mapper.readValue(json, FiscalDocumentDTO.class);
@@ -54,7 +52,7 @@ public class NFCeAPI {
             status.setModel(DFModelo.NFCE.getCodigo());
 
             if (!statusController.getStatusWebServiceCode(status)) {
-                LOGGER.info("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ. Entrada em contingência.");
+                log.info("Não há CONEXÃO com a INTERNET ou há INDISPONIBILIDADE DA SEFAZ. Entrada em contingência.");
 
                 dto.setContingency(true);
                 dto.getFiscalDocumentDTO().getIde().setTpEmis("9");
@@ -64,7 +62,7 @@ public class NFCeAPI {
 
             return ResponseEntity.status(200).body(nfCeController.send(dto));
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));
         }
     }
@@ -75,7 +73,7 @@ public class NFCeAPI {
                                              @RequestParam("chave") String key,
                                              @RequestParam("justificativa") String justification) {
         try {
-            LOGGER.info("Call cancelNFCe() method");
+            log.info("Call cancelNFCe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -88,7 +86,7 @@ public class NFCeAPI {
 
             return ResponseEntity.status(200).body(nfCeController.cancel(dto));
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));
         }
     }
@@ -103,7 +101,7 @@ public class NFCeAPI {
                                                  @RequestParam("justificativa") String justification) {
 
         try {
-            LOGGER.info("Call disablementNFCe() method");
+            log.info("Call disablementNFCe() method");
             FiscalHelper.validateCertificateBeforeUse(
                     FiscalProperties.getInstance().getDirCertificate().concat(emitter).concat(".pfx"),
                     password);
@@ -120,7 +118,7 @@ public class NFCeAPI {
 
             return ResponseEntity.status(200).body(nfCeController.disablement(dto));
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));
         }
     }
@@ -131,7 +129,7 @@ public class NFCeAPI {
             nfCeController.contingency();
             return ResponseEntity.status(200).body("Contingência Executada");
         } catch (Exception ex) {
-            LOGGER.error(ex.getMessage());
+            log.error(ex.getMessage());
             return ResponseEntity.status(500).body("Exception: ".concat(ex.getMessage()));
         }
     }

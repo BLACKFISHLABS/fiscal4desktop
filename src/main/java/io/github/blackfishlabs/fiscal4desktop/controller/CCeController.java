@@ -15,8 +15,7 @@ import io.github.blackfishlabs.fiscal4desktop.controller.translator.FiscalCCeTra
 import io.github.blackfishlabs.fiscal4desktop.controller.translator.FiscalStatusDocumentTranslator;
 import io.github.blackfishlabs.fiscal4desktop.service.CCeService;
 import io.github.blackfishlabs.fiscal4desktop.service.NFeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -25,17 +24,16 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkArgument;
 import static java.util.Objects.isNull;
 
+@Slf4j
 @Service
 public class CCeController {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(CCeController.class);
 
     public String sendCCe(FiscalEventCCeDTO dto) throws Exception {
         CCeService service = new CCeService();
         NFeService nFeService = new NFeService();
         FiscalCCeTranslator translator = new FiscalCCeTranslator();
 
-        LOGGER.info(String.format("Chave da Nota %s >> buscando da sefaz...", dto.getKey()));
+        log.info(String.format("Chave da Nota %s >> buscando da sefaz...", dto.getKey()));
         FiscalStatusDocumentTranslator statusDocumentTranslator = new FiscalStatusDocumentTranslator();
         FiscalStatusDocumentDTO statusDocumentDTO = new FiscalStatusDocumentDTO();
         statusDocumentDTO.setEmitter(dto.getEmitter());
@@ -62,7 +60,7 @@ public class CCeController {
             checkArgument(info.getCodigoStatus().equals(135),
                     info.getCodigoStatus().toString().concat(" - ").
                             concat(info.getMotivo()));
-            LOGGER.info("Carta de Correção emitida pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
+            log.info("Carta de Correção emitida pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
 
             FiscalStatusDocumentTranslator fiscalStatusDocumentTranslator = new FiscalStatusDocumentTranslator();
             FiscalStatusDocumentDTO fiscalStatusDocumentDTO = new FiscalStatusDocumentDTO();
@@ -88,7 +86,7 @@ public class CCeController {
                     FileHelper.exportXml(eventNFe, xmlPath);
                     FileHelper.exportFilesPDFOnly(protocolEvent.get());
                 } catch (Exception e) {
-                    LOGGER.error(e.getMessage());
+                    log.error(e.getMessage());
                 }
             }
 

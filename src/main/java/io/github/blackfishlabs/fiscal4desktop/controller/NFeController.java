@@ -21,8 +21,7 @@ import io.github.blackfishlabs.fiscal4desktop.domain.model.NFeEntity;
 import io.github.blackfishlabs.fiscal4desktop.domain.repository.NFeRepository;
 import io.github.blackfishlabs.fiscal4desktop.infra.NFeConfiguration;
 import io.github.blackfishlabs.fiscal4desktop.service.NFeService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,13 +38,12 @@ import java.util.zip.GZIPInputStream;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Strings.isNullOrEmpty;
 
+@Slf4j
 @Service
 public class NFeController {
 
     @Autowired
     private NFeRepository nFeRepository;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(NFeController.class);
 
     public String send(FiscalSendDTO sendDTO) throws Exception {
         NFeService service = new NFeService();
@@ -60,7 +58,7 @@ public class NFeController {
                 send.getRetorno().getStatus().concat(" - ").
                         concat(send.getRetorno().getMotivo()));
 
-        LOGGER.info("Nota autorizada pelo protocolo: ".concat(send.getRetorno().getProtocoloInfo().getNumeroProtocolo()));
+        log.info("Nota autorizada pelo protocolo: ".concat(send.getRetorno().getProtocoloInfo().getNumeroProtocolo()));
 
         FileHelper.saveFilesAndSendToEmailAttach(send);
         saveDocInDatabase(send);
@@ -78,7 +76,7 @@ public class NFeController {
         if (nFeEntity.isPresent()) {
             dto.setProtocol(nFeEntity.get().getProtocol());
         } else {
-            LOGGER.info(String.format("Nota %s não encontrada no banco de dados local, buscando da sefaz...", dto.getKey()));
+            log.info(String.format("Nota %s não encontrada no banco de dados local, buscando da sefaz...", dto.getKey()));
             FiscalStatusDocumentTranslator fiscalStatusDocumentTranslator = new FiscalStatusDocumentTranslator();
 
             FiscalStatusDocumentDTO fiscalStatusDocumentDTO = new FiscalStatusDocumentDTO();
@@ -92,8 +90,8 @@ public class NFeController {
             if ("100".equals(status.getStatus())) {
                 dto.setProtocol(status.getProtocolo().getProtocoloInfo().getNumeroProtocolo());
             } else {
-                LOGGER.error(status.getMotivo());
-                LOGGER.info(String.format("Protocolo %s não encontrada no busca da chave", dto.getKey()));
+                log.error(status.getMotivo());
+                log.info(String.format("Protocolo %s não encontrada no busca da chave", dto.getKey()));
             }
         }
 
@@ -106,7 +104,7 @@ public class NFeController {
                 checkArgument(info.getCodigoStatus().equals(135),
                         info.getCodigoStatus().toString().concat(" - ").
                                 concat(info.getMotivo()));
-                LOGGER.info("Nota cancelada pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
+                log.info("Nota cancelada pelo protocolo: ".concat(event.get().getInfoEventoRetorno().getNumeroProtocolo()));
 
                 FiscalStatusDocumentTranslator fiscalStatusDocumentTranslator = new FiscalStatusDocumentTranslator();
 
@@ -134,7 +132,7 @@ public class NFeController {
 
                         FileHelper.exportXml(procEventNFe, xmlPath);
                     } catch (Exception e) {
-                        LOGGER.error(e.getMessage());
+                        log.error(e.getMessage());
                     }
 
                     if (nFeEntity.isPresent()) {
@@ -208,12 +206,12 @@ public class NFeController {
 
         new Thread(() -> {
             try {
-                LOGGER.info("Salvando documentos no Banco de Dados");
+                log.info("Salvando documentos no Banco de Dados");
                 Optional<NFNota> document = send.getLoteAssinado().getNotas().stream().findFirst();
                 document.ifPresent(d -> nFeRepository.save(translator.toEntity(send)));
             } catch (Exception e) {
-                LOGGER.error("Erro ao gravar no banco de dados!");
-                LOGGER.error(e.getMessage());
+                log.error("Erro ao gravar no banco de dados!");
+                log.error(e.getMessage());
             }
         }).start();
     }
