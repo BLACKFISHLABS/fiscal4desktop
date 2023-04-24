@@ -70,7 +70,7 @@ public class FiscalMDFeDocumentTranslator implements Translator<FiscalMDFeDocume
             MDFInfoSeguro seguro = new MDFInfoSeguro();
 
             seguro.setApolice(dto.getNApol());
-            //seguro.setAverbacao(dto.getNAver());
+            // seguro.setAverbacao(dto.getNAver());
             seguro.setInfo(getInfSeguro(dto.getInfSeg()));
             seguro.setResponsavelSeguro(getResponsavelSeguro(dto.getInfResp()));
 
